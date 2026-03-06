@@ -1,0 +1,1460 @@
+<!DOCTYPE html>
+<html id="htmlRoot" lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MedCode AI Ultimate</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0e1a;--surface:#111827;--surface2:#1a2235;--border:#1e2d45;
+  --accent:#00d4ff;--accent2:#00ff9d;--accent3:#7c6fff;
+  --danger:#ff4757;--warning:#ffa502;--success:#2ed573;--red:#ff4757;
+  --text:#e8f0fe;--text2:#8899bb;--text3:#4a5f80;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,212,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.02) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+.app{display:grid;grid-template-columns:1fr 440px;min-height:100vh;position:relative;z-index:1;}
+@media(max-width:960px){.app{grid-template-columns:1fr;}}
+
+/* HEADER */
+header{grid-column:1/-1;padding:10px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:rgba(10,14,26,0.97);backdrop-filter:blur(10px);position:sticky;top:0;z-index:100;gap:10px;flex-wrap:wrap;}
+.logo{display:flex;align-items:center;gap:9px;}
+.logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-family:'IBM Plex Mono',monospace;font-size:12px;}
+.logo-name{font-size:16px;font-weight:700;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.logo-sub{font-size:9px;color:var(--text3);letter-spacing:1.5px;}
+.hdr-mid{display:flex;align-items:center;gap:8px;flex:1;justify-content:center;flex-wrap:wrap;}
+.ticket-inp{background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:6px 11px;color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:12px;width:150px;direction:ltr;text-align:center;}
+.ticket-inp:focus{outline:none;border-color:var(--accent);}
+.ticket-inp::placeholder{color:var(--text3);font-family:'IBM Plex Sans Arabic',sans-serif;font-size:11px;}
+.lang-tog{display:flex;background:var(--surface2);border:1px solid var(--border);border-radius:7px;overflow:hidden;}
+.lang-btn{padding:6px 12px;font-family:'IBM Plex Sans Arabic',sans-serif;font-size:11px;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--text2);transition:all .2s;}
+.lang-btn.active{background:rgba(0,212,255,.15);color:var(--accent);}
+.hdr-right{display:flex;gap:7px;align-items:center;}
+.btn-sm{background:transparent;border:1px solid var(--border);border-radius:7px;color:var(--text2);font-family:'IBM Plex Sans Arabic',sans-serif;font-size:11px;padding:5px 11px;cursor:pointer;transition:all .2s;}
+.btn-sm:hover{border-color:var(--danger);color:var(--danger);}
+.status-pill{display:flex;align-items:center;gap:5px;background:rgba(0,255,157,.08);border:1px solid rgba(0,255,157,.2);border-radius:20px;padding:4px 10px;font-size:10px;color:var(--accent2);}
+.sdot{width:5px;height:5px;background:var(--accent2);border-radius:50%;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* FORM */
+.form-panel{padding:16px 20px;overflow-y:auto;max-height:calc(100vh - 53px);}
+.section{background:var(--surface);border:1px solid var(--border);border-radius:13px;margin-bottom:14px;overflow:hidden;}
+.sec-hdr{padding:11px 15px;background:rgba(255,255,255,.02);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.sec-hdr-l{display:flex;align-items:center;gap:8px;}
+.sec-num{width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;font-family:'IBM Plex Mono',monospace;}
+.n1{background:rgba(0,212,255,.15);color:var(--accent);}
+.n2{background:rgba(255,71,87,.15);color:var(--red);}
+.n3{background:rgba(124,111,255,.15);color:var(--accent3);}
+.n4{background:rgba(255,165,2,.15);color:var(--warning);}
+.n5{background:rgba(46,213,115,.15);color:var(--success);}
+.n6{background:rgba(0,212,255,.15);color:var(--accent);}
+.n7{background:rgba(255,71,87,.15);color:var(--red);}
+.n8{background:rgba(0,255,157,.15);color:var(--accent2);}
+.sec-title{font-size:12px;font-weight:600;}
+.sec-body{padding:14px;}
+
+/* CHIPS */
+.cg{margin-bottom:11px;}
+.cl{font-size:10px;color:var(--text2);margin-bottom:6px;letter-spacing:.3px;}
+.cw{display:flex;flex-wrap:wrap;gap:5px;align-items:center;}
+.chip{padding:5px 12px;border-radius:16px;border:1px solid var(--border);background:var(--surface2);color:var(--text2);font-family:'IBM Plex Sans Arabic',sans-serif;font-size:11px;cursor:pointer;transition:all .15s;user-select:none;}
+.chip:hover{border-color:var(--accent);color:var(--accent);}
+.chip.sel{border-color:var(--accent);background:rgba(0,212,255,.12);color:var(--accent);font-weight:600;}
+/* RED CHIPS for chief complaint */
+.chip.red-chip:hover{border-color:var(--red);color:var(--red);}
+.chip.red-chip.sel{border-color:var(--red);background:rgba(255,71,87,.12);color:var(--red);font-weight:600;}
+.add-chip-btn{width:24px;height:24px;border-radius:6px;border:1px dashed var(--border);background:transparent;color:var(--text3);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;}
+.add-chip-btn:hover{border-color:var(--accent2);color:var(--accent2);}
+
+/* PAIN */
+.pain-row{display:flex;gap:4px;flex-wrap:wrap;}
+.pb{width:31px;height:31px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text2);font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;cursor:pointer;transition:all .15s;}
+.pb:hover{transform:scale(1.08);}
+.pb.sel{transform:scale(1.1);}
+.pb.p0.sel{background:#2ed573;border-color:#2ed573;color:#000;}
+.pb.p1.sel,.pb.p2.sel,.pb.p3.sel{background:#7bed9f;border-color:#7bed9f;color:#000;}
+.pb.p4.sel,.pb.p5.sel,.pb.p6.sel{background:#ffa502;border-color:#ffa502;color:#000;}
+.pb.p7.sel,.pb.p8.sel{background:#ff6b6b;border-color:#ff6b6b;color:#fff;}
+.pb.p9.sel,.pb.p10.sel{background:#ff4757;border-color:#ff4757;color:#fff;}
+
+/* SLIDER */
+.sl-row{display:flex;align-items:center;gap:10px;}
+.sl-val{font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:700;color:var(--accent);min-width:28px;text-align:center;}
+input[type=range]{flex:1;-webkit-appearance:none;height:4px;border-radius:2px;background:var(--border);}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--accent);cursor:pointer;}
+
+/* CUSTOM LIST */
+.clist{display:flex;flex-direction:column;gap:4px;margin-bottom:7px;}
+.ci{display:flex;align-items:center;gap:5px;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:6px 9px;}
+.ci-txt{flex:1;font-size:12px;color:var(--text);}
+.ci-edit,.ci-del{font-size:12px;cursor:pointer;color:var(--text3);padding:0 3px;background:none;border:none;transition:color .2s;}
+.ci-edit:hover{color:var(--accent2);}
+.ci-del:hover{color:var(--danger);}
+.add-row{display:flex;gap:5px;}
+.add-inp{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:7px 10px;color:var(--text);font-family:'IBM Plex Sans Arabic',sans-serif;font-size:12px;direction:rtl;}
+.add-inp:focus{outline:none;border-color:var(--accent);}
+.add-inp::placeholder{color:var(--text3);}
+.add-btn{background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.3);border-radius:7px;color:var(--accent);font-size:16px;width:33px;cursor:pointer;}
+.add-btn:hover{background:rgba(0,212,255,.2);}
+
+/* NUMBER INPUT */
+.num-field{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.num-label{font-size:11px;color:var(--text2);min-width:100px;}
+.num-inp{background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:6px 10px;color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:13px;width:80px;text-align:center;direction:ltr;}
+.num-inp:focus{outline:none;border-color:var(--accent);}
+
+/* VITALS GRID */
+.vitals-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+/* DISEASE PANEL */
+.disease-list{display:flex;flex-direction:column;gap:6px;margin-bottom:10px;}
+.disease-item{background:var(--surface2);border:1px solid var(--border);border-radius:9px;overflow:hidden;}
+.disease-header{padding:9px 12px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:background .2s;}
+.disease-header:hover{background:rgba(255,255,255,.03);}
+.disease-name{font-size:12px;font-weight:600;color:var(--text);}
+.disease-match{font-size:10px;padding:2px 7px;border-radius:10px;font-weight:700;}
+.match-high{background:rgba(255,71,87,.15);color:var(--red);}
+.match-med{background:rgba(255,165,2,.15);color:var(--warning);}
+.match-low{background:rgba(136,153,187,.1);color:var(--text2);}
+.disease-body{display:none;padding:10px 12px;border-top:1px solid var(--border);}
+.disease-body.open{display:block;}
+.disease-criteria{display:flex;flex-wrap:wrap;gap:4px;}
+.dc{font-size:10px;padding:3px 8px;border-radius:10px;border:1px solid;}
+.dc.present{background:rgba(46,213,115,.1);color:var(--success);border-color:rgba(46,213,115,.3);}
+.dc.absent{background:rgba(136,153,187,.05);color:var(--text3);border-color:var(--border);}
+.dc.missing{background:rgba(255,165,2,.08);color:var(--warning);border-color:rgba(255,165,2,.2);}
+
+/* AI SUGGESTION BOX */
+.ai-suggest{background:rgba(124,111,255,.06);border:1px solid rgba(124,111,255,.25);border-radius:11px;padding:13px;margin-bottom:12px;}
+.ai-suggest-title{font-size:10px;color:var(--accent3);font-weight:700;letter-spacing:1px;margin-bottom:9px;display:flex;align-items:center;gap:6px;}
+.ai-diag{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.05);}
+.ai-diag:last-child{border-bottom:none;padding-bottom:0;}
+.ai-diag-name{font-size:13px;color:var(--text);font-weight:600;}
+.ai-diag-sub{font-size:11px;color:var(--text2);margin-top:2px;}
+.ai-prob{font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;padding:3px 9px;border-radius:7px;}
+.prob-h{background:rgba(255,71,87,.15);color:var(--red);}
+.prob-m{background:rgba(255,165,2,.15);color:var(--warning);}
+.prob-l{background:rgba(136,153,187,.1);color:var(--text2);}
+
+/* GENERATE */
+.btn-gen{width:100%;padding:13px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:11px;color:#000;font-family:'IBM Plex Sans Arabic',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:9px;margin-top:6px;}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(0,212,255,.3);}
+
+/* OUTPUT */
+.output-panel{border-right:1px solid var(--border);background:var(--surface);padding:18px;overflow-y:auto;max-height:calc(100vh - 53px);}
+.out-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.out-title{font-size:14px;font-weight:700;}
+.placeholder-out{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:350px;text-align:center;gap:10px;color:var(--text3);}
+.placeholder-out .big-icon{font-size:48px;opacity:.2;}
+.out-content{display:none;}
+.out-content.show{display:block;}
+.spinner-out{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:280px;gap:12px;}
+.spinner-out.show{display:flex;}
+.spin{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin-steps{display:flex;flex-direction:column;gap:4px;}
+.ss{font-size:11px;color:var(--text3);transition:color .3s;}
+.ss.active{color:var(--accent);}
+.ss.done{color:var(--accent2);}
+.out-sec{background:var(--surface2);border:1px solid var(--border);border-radius:11px;padding:13px;margin-bottom:11px;}
+.out-sec-t{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border);}
+.out-txt{font-size:12px;line-height:1.9;color:var(--text2);}
+.icd-p{background:rgba(0,212,255,.05);border:1px solid rgba(0,212,255,.25);border-radius:10px;padding:12px;margin-bottom:8px;}
+.icd-s{background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:10px;margin-bottom:6px;}
+.icd-code-b{font-family:'IBM Plex Mono',monospace;font-size:19px;color:var(--accent);font-weight:600;}
+.icd-code-s{font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--text2);}
+.badge{font-size:9px;padding:2px 7px;border-radius:8px;font-weight:700;}
+.bp{background:rgba(0,212,255,.15);color:var(--accent);border:1px solid rgba(0,212,255,.3);}
+.bs{background:rgba(136,153,187,.1);color:var(--text2);border:1px solid rgba(136,153,187,.2);}
+.conf-row{display:flex;align-items:center;justify-content:space-between;font-size:10px;color:var(--text3);margin-bottom:3px;}
+.conf-pct{color:var(--accent2);font-weight:700;}
+.conf-bar{background:var(--border);border-radius:3px;height:4px;overflow:hidden;}
+.conf-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent2),var(--accent));transition:width 1s ease;}
+.copy-btn{width:100%;padding:12px;background:transparent;border:1px solid var(--accent2);border-radius:9px;color:var(--accent2);font-family:'IBM Plex Sans Arabic',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:7px;margin-top:12px;}
+.copy-btn:hover{background:rgba(0,255,157,.08);}
+.tip-box{background:rgba(0,255,157,.05);border:1px solid rgba(0,255,157,.15);border-radius:9px;padding:11px;font-size:11px;color:var(--text2);line-height:1.7;margin-top:10px;}
+.tip-t{font-size:9px;color:var(--accent2);font-weight:700;letter-spacing:1px;margin-bottom:4px;}
+.err-box{background:rgba(255,71,87,.07);border:1px solid rgba(255,71,87,.2);border-radius:9px;padding:12px;color:#ff4757;font-size:12px;text-align:center;}
+
+/* MODAL */
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:300;display:none;align-items:center;justify-content:center;}
+.modal-ov.show{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:22px;width:340px;max-width:90vw;}
+.modal-t{font-size:14px;font-weight:700;margin-bottom:14px;}
+.modal-inp{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:'IBM Plex Sans Arabic',sans-serif;font-size:13px;direction:rtl;margin-bottom:12px;}
+.modal-inp:focus{outline:none;border-color:var(--accent);}
+.modal-acts{display:flex;gap:7px;justify-content:flex-end;}
+.modal-save{background:var(--accent);border:none;border-radius:7px;color:#000;font-family:'IBM Plex Sans Arabic',sans-serif;font-size:12px;font-weight:700;padding:7px 16px;cursor:pointer;}
+.modal-cancel{background:transparent;border:1px solid var(--border);border-radius:7px;color:var(--text2);font-family:'IBM Plex Sans Arabic',sans-serif;font-size:12px;padding:7px 14px;cursor:pointer;}
+
+
+/* GCS BUTTONS */
+.gcs-btn{width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text2);font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;}
+.gcs-btn:hover{border-color:var(--accent);color:var(--accent);}
+.gcs-btn.sel{background:var(--accent);border-color:var(--accent);color:#000;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:var(--surface);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+
+/* COLLAPSIBLE */
+.collapse-btn{background:transparent;border:none;color:var(--text3);cursor:pointer;font-size:14px;padding:0;}
+.sec-body{padding:14px;}
+.sec-body.collapsed{display:none;}
+
+/* SAVE BUTTON */
+.btn-save{width:100%;padding:11px;background:linear-gradient(135deg,rgba(0,255,157,.15),rgba(0,212,255,.1));border:1px solid var(--accent2);border-radius:11px;color:var(--accent2);font-family:'IBM Plex Sans Arabic',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:9px;margin-top:8px;}
+.btn-save:hover{background:rgba(0,255,157,.2);transform:translateY(-1px);}
+.btn-save:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+
+/* PATIENTS PAGE OVERLAY */
+.patients-overlay{position:fixed;inset:0;background:var(--bg);z-index:200;display:none;flex-direction:column;overflow:hidden;}
+.patients-overlay.show{display:flex;}
+.patients-hdr{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:rgba(10,14,26,.97);flex-shrink:0;}
+.patients-hdr-title{font-size:15px;font-weight:700;background:linear-gradient(90deg,var(--accent2),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.btn-back{background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--text2);font-family:'IBM Plex Sans Arabic',sans-serif;font-size:12px;padding:7px 14px;cursor:pointer;transition:all .2s;}
+.btn-back:hover{border-color:var(--accent);color:var(--accent);}
+.patients-body{flex:1;overflow-y:auto;padding:16px 20px;}
+.patients-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;}
+@media(max-width:600px){.patients-grid{grid-template-columns:1fr;}}
+.pt-card{background:var(--surface);border:1px solid var(--border);border-radius:13px;overflow:hidden;cursor:pointer;transition:all .2s;}
+.pt-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,212,255,.1);}
+.pt-card-hdr{padding:12px 14px;display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
+.pt-ticket{font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:700;color:var(--accent);}
+.pt-time{font-size:10px;color:var(--text3);}
+.pt-complaints{display:flex;flex-wrap:wrap;gap:4px;padding:0 14px 8px;}
+.pt-chip{padding:3px 10px;border-radius:10px;background:rgba(255,71,87,.1);border:1px solid rgba(255,71,87,.2);font-size:10px;color:#ff6b81;font-weight:600;}
+.pt-info-row{padding:8px 14px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.pt-info-item{font-size:10px;color:var(--text2);}
+.pt-icd-row{padding:8px 14px;border-top:1px solid var(--border);display:flex;gap:6px;flex-wrap:wrap;}
+.pt-icd-badge{font-family:'IBM Plex Mono',monospace;font-size:10px;padding:3px 8px;background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.2);border-radius:6px;color:var(--accent);cursor:pointer;transition:all .15s;}
+.pt-icd-badge:hover{background:rgba(0,212,255,.2);}
+.pt-icd-badge.copied{background:rgba(0,255,157,.15);border-color:var(--accent2);color:var(--accent2);}
+.pt-card-footer{padding:8px 14px;border-top:1px solid var(--border);display:flex;gap:7px;}
+.pt-btn{flex:1;padding:7px;border-radius:7px;font-family:'IBM Plex Sans Arabic',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;border:1px solid;}
+.pt-btn-view{background:rgba(0,212,255,.08);border-color:rgba(0,212,255,.3);color:var(--accent);}
+.pt-btn-view:hover{background:rgba(0,212,255,.18);}
+.pt-btn-del{background:rgba(255,71,87,.06);border-color:rgba(255,71,87,.2);color:var(--danger);}
+.pt-btn-del:hover{background:rgba(255,71,87,.15);}
+.pt-empty{text-align:center;padding:60px 20px;color:var(--text3);}
+.pt-empty-icon{font-size:48px;opacity:.2;margin-bottom:12px;}
+
+/* PATIENT DETAIL OVERLAY */
+.detail-overlay{position:fixed;inset:0;background:var(--bg);z-index:250;display:none;flex-direction:column;overflow:hidden;}
+.detail-overlay.show{display:flex;}
+.detail-hdr{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:rgba(10,14,26,.97);flex-shrink:0;}
+.detail-body{flex:1;overflow-y:auto;padding:16px 20px;max-width:800px;margin:0 auto;width:100%;}
+.detail-sec{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:14px;margin-bottom:12px;}
+.detail-sec-title{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:10px;padding-bottom:7px;border-bottom:1px solid var(--border);}
+.detail-icd-item{background:rgba(0,212,255,.05);border:1px solid rgba(0,212,255,.2);border-radius:9px;padding:11px;margin-bottom:8px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.detail-icd-code{font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:700;color:var(--accent);min-width:80px;}
+.detail-icd-info{flex:1;}
+.btn-copy-icd{background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.3);border-radius:7px;color:var(--accent);font-size:11px;padding:5px 12px;cursor:pointer;font-family:'IBM Plex Sans Arabic',sans-serif;white-space:nowrap;}
+.btn-copy-icd:hover{background:rgba(0,212,255,.2);}
+.btn-copy-icd.done{background:rgba(0,255,157,.15);border-color:var(--accent2);color:var(--accent2);}
+.detail-txt{font-size:12px;line-height:1.9;color:var(--text2);}
+.vital-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;}
+.vital-box{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px;text-align:center;}
+.vital-val{font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:700;color:var(--accent);}
+.vital-lbl{font-size:9px;color:var(--text3);margin-top:3px;}
+
+/* MOBILE FIXES */
+@media(max-width:960px){
+  .output-panel{border-right:none;border-top:1px solid var(--border);max-height:none;}
+  .form-panel{max-height:none;}
+  header{padding:8px 12px;}
+  .logo-sub{display:none;}
+  .hdr-mid{order:3;width:100%;justify-content:stretch;}
+  .ticket-inp{flex:1;}
+}
+@media(max-width:500px){
+  .hdr-mid{flex-wrap:nowrap;}
+  .ticket-inp{min-width:0;}
+}
+</style>
+</head>
+<body>
+
+<!-- MODAL -->
+<div class="modal-ov" id="editModal">
+  <div class="modal">
+    <div class="modal-t" id="modalTitle">إضافة / تعديل</div>
+    <input class="modal-inp" id="modalInput" type="text" placeholder="اكتب هنا...">
+    <div class="modal-acts">
+      <button class="modal-cancel" onclick="closeModal()">إلغاء</button>
+      <button class="modal-save" onclick="saveModal()">حفظ</button>
+    </div>
+  </div>
+</div>
+
+<!-- PATIENTS LIST PAGE -->
+<div class="patients-overlay" id="patientsOverlay">
+  <div class="patients-hdr">
+    <div class="patients-hdr-title">📋 المرضى المحفوظون</div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+      <span id="ptCountBadge" style="font-size:10px;color:var(--text3);font-family:'IBM Plex Mono',monospace;"></span>
+      <button onclick="exportToExcel()" id="exportBtn" style="background:rgba(0,255,157,.08);border:1px solid rgba(0,255,157,.3);border-radius:8px;color:var(--accent2);font-family:'IBM Plex Sans Arabic',sans-serif;font-size:11px;font-weight:700;padding:7px 13px;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .2s;">
+        <span>📊</span><span>تصدير Excel</span>
+      </button>
+      <button class="btn-back" onclick="closePatientsPage()">← رجوع</button>
+    </div>
+  </div>
+  <div class="patients-body">
+    <div class="patients-grid" id="patientsGrid"></div>
+  </div>
+</div>
+
+<!-- PATIENT DETAIL PAGE -->
+<div class="detail-overlay" id="detailOverlay">
+  <div class="detail-hdr">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div id="detailTicket" style="font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:700;color:var(--accent)"></div>
+      <div id="detailTime" style="font-size:10px;color:var(--text3)"></div>
+    </div>
+    <button class="btn-back" onclick="closeDetailPage()">← رجوع للقائمة</button>
+  </div>
+  <div class="detail-body" id="detailBody"></div>
+</div>
+
+<div class="app">
+<header>
+  <div class="logo">
+    <div class="logo-icon">MC</div>
+    <div><div class="logo-name">MedCode AI</div><div class="logo-sub">ULTIMATE CLINICAL SYSTEM</div></div>
+  </div>
+  <div class="hdr-mid">
+    <input class="ticket-inp" id="ticketNum" placeholder="رقم الملف / التذكرة" dir="ltr">
+    <div class="lang-tog">
+      <button class="lang-btn active" id="langAr" onclick="setLang('ar')">AR</button>
+      <button class="lang-btn" id="langEn" onclick="setLang('en')">EN</button>
+    </div>
+  </div>
+  <div class="hdr-right">
+    <button class="btn-sm" onclick="openPatientsPage()" style="border-color:rgba(0,255,157,.3);color:var(--accent2);">👥 المرضى</button>
+    <button class="btn-sm" onclick="clearAll()">🗑 مسح</button>
+    <div class="status-pill"><div class="sdot"></div>نشط</div>
+  </div>
+</header>
+
+<div class="form-panel">
+
+<!-- 1. PATIENT -->
+<div class="section">
+  <div class="sec-hdr">
+    <div class="sec-hdr-l"><div class="sec-num n1">١</div><div class="sec-title">بيانات المريض</div></div>
+    <button class="collapse-btn" onclick="toggleSec(this)">▲</button>
+  </div>
+  <div class="sec-body">
+    <div class="cg"><div class="cl">الجنس</div>
+      <div class="cw" id="gender">
+        <div class="chip" data-ar="ذكر" data-en="Male" onclick="sel1(this,'gender')">ذكر</div>
+        <div class="chip" data-ar="أنثى" data-en="Female" onclick="sel1(this,'gender')">أنثى</div>
+        <button class="add-chip-btn" onclick="openAdd('gender',false)">+</button>
+      </div>
+    </div>
+    <div class="cg"><div class="cl">العمر</div>
+      <div class="sl-row"><div class="sl-val" id="ageVal">35</div>
+        <input type="range" min="1" max="100" value="35" id="ageSlider" oninput="document.getElementById('ageVal').textContent=this.value">
+        <span style="font-size:11px;color:var(--text3)">سنة</span>
+      </div>
+    </div>
+    <div class="cg"><div class="cl">التخصص</div>
+      <div class="cw" id="specialty">
+        <div class="chip" data-ar="طوارئ" data-en="Emergency" onclick="sel1(this,'specialty')">طوارئ</div>
+        <div class="chip" data-ar="قلب" data-en="Cardiology" onclick="sel1(this,'specialty')">قلب</div>
+        <div class="chip" data-ar="عظام" data-en="Orthopedics" onclick="sel1(this,'specialty')">عظام</div>
+        <div class="chip" data-ar="أعصاب" data-en="Neurology" onclick="sel1(this,'specialty')">أعصاب</div>
+        <div class="chip" data-ar="غدد صماء" data-en="Endocrine" onclick="sel1(this,'specialty')">غدد صماء</div>
+        <div class="chip" data-ar="تنفسي" data-en="Respiratory" onclick="sel1(this,'specialty')">تنفسي</div>
+        <div class="chip" data-ar="هضمي" data-en="GI" onclick="sel1(this,'specialty')">هضمي</div>
+        <div class="chip" data-ar="كلى" data-en="Nephrology" onclick="sel1(this,'specialty')">كلى</div>
+        <button class="add-chip-btn" onclick="openAdd('specialty',false)">+</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 2. CHIEF COMPLAINT - RED -->
+<div class="section">
+  <div class="sec-hdr">
+    <div class="sec-hdr-l"><div class="sec-num n2">٢</div><div class="sec-title" style="color:var(--red)">الشكوى الرئيسية 🔴</div></div>
+    <button class="collapse-btn" onclick="toggleSec(this)">▲</button>
+  </div>
+  <div class="sec-body">
+    <div class="cg"><div class="cl" style="color:rgba(255,71,87,.7)">الأعراض الرئيسية — تظهر باللون الأحمر في التقرير</div>
+      <div class="cw" id="complaint">
+        <div class="chip red-chip" data-ar="ألم صدري" data-en="Chest pain" onclick="tog(this)">ألم صدري</div>
+        <div class="chip red-chip" data-ar="ضيق تنفس" data-en="Dyspnea" onclick="tog(this)">ضيق تنفس</div>
+        <div class="chip red-chip" data-ar="ألم بطن" data-en="Abdominal pain" onclick="tog(this)">ألم بطن</div>
+        <div class="chip red-chip" data-ar="غثيان/قيء" data-en="Nausea/Vomiting" onclick="tog(this)">غثيان/قيء</div>
+        <div class="chip red-chip" data-ar="صداع" data-en="Headache" onclick="tog(this)">صداع</div>
+        <div class="chip red-chip" data-ar="دوخة" data-en="Dizziness" onclick="tog(this)">دوخة</div>
+        <div class="chip red-chip" data-ar="حمى" data-en="Fever" onclick="tog(this)">حمى</div>
+        <div class="chip red-chip" data-ar="سعال" data-en="Cough" onclick="tog(this)">سعال</div>
+        <div class="chip red-chip" data-ar="ألم ظهر" data-en="Back pain" onclick="tog(this)">ألم ظهر</div>
+        <div class="chip red-chip" data-ar="ألم مفاصل" data-en="Joint pain" onclick="tog(this)">ألم مفاصل</div>
+        <div class="chip red-chip" data-ar="تورم" data-en="Swelling" onclick="tog(this)">تورم</div>
+        <div class="chip red-chip" data-ar="خفقان" data-en="Palpitations" onclick="tog(this)">خفقان</div>
+        <div class="chip red-chip" data-ar="إغماء" data-en="Syncope" onclick="tog(this)">إغماء</div>
+        <div class="chip red-chip" data-ar="ضعف عام" data-en="Weakness" onclick="tog(this)">ضعف عام</div>
+        <div class="chip red-chip" data-ar="حرق في البول" data-en="Dysuria" onclick="tog(this)">حرق في البول</div>
+        <div class="chip red-chip" data-ar="نزيف" data-en="Bleeding" onclick="tog(this)">نزيف</div>
+        <button class="add-chip-btn" onclick="openAdd('complaint',true)">+</button>
+      </div>
+    </div>
+    <div class="cg"><div class="cl">موقع الألم</div>
+      <div class="cw" id="painLoc">
+        <div class="chip" data-ar="صدر وسط" data-en="Central chest" onclick="tog(this)">صدر وسط</div>
+        <div class="chip" data-ar="صدر أيسر" data-en="Left chest" onclick="tog(this)">صدر أيسر</div>
+        <div class="chip" data-ar="بطن علوي" data-en="Epigastric" onclick="tog(this)">بطن علوي</div>
+        <div class="chip" data-ar="بطن سفلي أيمن" data-en="RLQ" onclick="tog(this)">بطن سفلي أيمن</div>
+        <div class="chip" data-ar="بطن سفلي أيسر" data-en="LLQ" onclick="tog(this)">بطن سفلي أيسر</div>
+        <div class="chip" data-ar="حول السرة" data-en="Periumbilical" onclick="tog(this)">حول السرة</div>
+        <div class="chip" data-ar="ظهر أسفل" data-en="Lower back" onclick="tog(this)">ظهر أسفل</div>
+        <div class="chip" data-ar="رقبة" data-en="Neck" onclick="tog(this)">رقبة</div>
+        <div class="chip" data-ar="ذراع أيسر" data-en="Left arm" onclick="tog(this)">ذراع أيسر</div>
+        <div class="chip" data-ar="فك" data-en="Jaw" onclick="tog(this)">فك</div>
+        <div class="chip" data-ar="ركبة" data-en="Knee" onclick="tog(this)">ركبة</div>
+        <button class="add-chip-btn" onclick="openAdd('painLoc',true)">+</button>
+      </div>
+    </div>
+    <div class="cg"><div class="cl">طبيعة الألم</div>
+      <div class="cw" id="painChar">
+        <div class="chip" data-ar="ضاغط" data-en="Pressure" onclick="sel1(this,'painChar')">ضاغط</div>
+        <div class="chip" data-ar="حارق" data-en="Burning" onclick="sel1(this,'painChar')">حارق</div>
+        <div class="chip" data-ar="طاعن" data-en="Sharp" onclick="sel1(this,'painChar')">طاعن</div>
+        <div class="chip" data-ar="نابض" data-en="Throbbing" onclick="sel1(this,'painChar')">نابض</div>
+        <div class="chip" data-ar="تشنجي" data-en="Colicky" onclick="sel1(this,'painChar')">تشنجي</div>
+        <div class="chip" data-ar="مستمر" data-en="Constant" onclick="sel1(this,'painChar')">مستمر</div>
+        <button class="add-chip-btn" onclick="openAdd('painChar',false)">+</button>
+      </div>
+    </div>
+    <div class="cg"><div class="cl">شدة الألم 0-10</div>
+      <div class="pain-row" id="painScale">
+        <button class="pb p0" onclick="selPain(this,0)">0</button><button class="pb p1" onclick="selPain(this,1)">1</button>
+        <button class="pb p2" onclick="selPain(this,2)">2</button><button class="pb p3" onclick="selPain(this,3)">3</button>
+        <button class="pb p4" onclick="selPain(this,4)">4</button><button class="pb p5" onclick="selPain(this,5)">5</button>
+        <button class="pb p6" onclick="selPain(this,6)">6</button><button class="pb p7" onclick="selPain(this,7)">7</button>
+        <button class="pb p8" onclick="selPain(this,8)">8</button><button class="pb p9" onclick="selPain(this,9)">9</button>
+        <button class="pb p10" onclick="selPain(this,10)">10</button>
+      </div>
+    </div>
+    <div class="cg"><div class="cl">الأعراض المصاحبة</div>
+      <div class="cw" id="associated">
+        <div class="chip" data-ar="تعرق" data-en="Diaphoresis" onclick="tog(this)">تعرق</div>
+        <div class="chip" data-ar="شحوب" data-en="Pallor" onclick="tog(this)">شحوب</div>
+        <div class="chip" data-ar="برودة الأطراف" data-en="Cold extremities" onclick="tog(this)">برودة الأطراف</div>
+        <div class="chip" data-ar="فقدان شهية" data-en="Anorexia" onclick="tog(this)">فقدان شهية</div>
+        <div class="chip" data-ar="إمساك" data-en="Constipation" onclick="tog(this)">إمساك</div>
+        <div class="chip" data-ar="إسهال" data-en="Diarrhea" onclick="tog(this)">إسهال</div>
+        <div class="chip" data-ar="قشعريرة" data-en="Chills/Rigors" onclick="tog(this)">قشعريرة</div>
+        <div class="chip" data-ar="صعوبة بلع" data-en="Dysphagia" onclick="tog(this)">صعوبة بلع</div>
+        <div class="chip" data-ar="كثرة التبول" data-en="Polyuria" onclick="tog(this)">كثرة التبول</div>
+        <div class="chip" data-ar="عطش شديد" data-en="Polydipsia" onclick="tog(this)">عطش شديد</div>
+        <div class="chip" data-ar="ألم عند الحركة" data-en="Pain on movement" onclick="tog(this)">ألم عند الحركة</div>
+        <div class="chip" data-ar="تيبس صباحي" data-en="Morning stiffness" onclick="tog(this)">تيبس صباحي</div>
+        <button class="add-chip-btn" onclick="openAdd('associated',true)">+</button>
+      </div>
+    </div>
+    <div class="cg"><div class="cl">مدة الأعراض</div>
+      <div class="cw" id="duration">
+        <div class="chip" data-ar="أقل من ساعة" data-en="<1h" onclick="sel1(this,'duration')">أقل من ساعة</div>
+        <div class="chip" data-ar="١-٦ ساعات" data-en="1-6h" onclick="sel1(this,'duration')">١-٦ ساعات</div>
+        <div class="chip" data-ar="٦-٢٤ ساعة" data-en="6-24h" onclick="sel1(this,'duration')">٦-٢٤ ساعة</div>
+        <div class="chip" data-ar="١-٣ أيام" data-en="1-3d" onclick="sel1(this,'duration')">١-٣ أيام</div>
+        <div class="chip" data-ar="أسبوع" data-en="1 week" onclick="sel1(this,'duration')">أسبوع</div>
+        <div class="chip" data-ar="مزمن" data-en="Chronic" onclick="sel1(this,'duration')">مزمن</div>
+        <button class="add-chip-btn" onclick="openAdd('duration',false)">+</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 3. VITALS -->
+<div class="section">
+  <div class="sec-hdr">
+    <div class="sec-hdr-l"><div class="sec-num n3">٣</div><div class="sec-title">العلامات الحيوية</div></div>
+    <button class="collapse-btn" onclick="toggleSec(this)">▲</button>
+  </div>
+  <div class="sec-body">
+    <div class="vitals-grid">
+      <div class="cg"><div class="cl">الضغط الانقباضي (SBP)</div>
+        <div class="cw" id="sbp">
+          <div class="chip" data-ar="أقل من 90" data-en="<90" onclick="sel1(this,'sbp')">أقل من 90</div>
+          <div class="chip" data-ar="90-120" data-en="90-120" onclick="sel1(this,'sbp')">90-120</div>
+          <div class="chip" data-ar="120-140" data-en="120-140" onclick="sel1(this,'sbp')">120-140</div>
+          <div class="chip" data-ar="140-180" data-en="140-180" onclick="sel1(this,'sbp')">140-180</div>
+          <div class="chip" data-ar="أكثر من 180" data-en=">180" onclick="sel1(this,'sbp')">أكثر من 180</div>
+        </div>
+      </div>
+      <div class="cg"><div class="cl">الضغط الانبساطي (DBP)</div>
+        <div class="cw" id="dbp">
+          <div class="chip" data-ar="أقل من 60" data-en="<60" onclick="sel1(this,'dbp')">أقل من 60</div>
+          <div class="chip" data-ar="60-80" data-en="60-80" onclick="sel1(this,'dbp')">60-80</div>
+          <div class="chip" data-ar="80-90" data-en="80-90" onclick="sel1(this,'dbp')">80-90</div>
+          <div class="chip" data-ar="90-110" data-en="90-110" onclick="sel1(this,'dbp')">90-110</div>
+          <div class="chip" data-ar="أكثر من 110" data-en=">110" onclick="sel1(this,'dbp')">أكثر من 110</div>
+        </div>
+      </div>
+      <div class="cg"><div class="cl">النبض</div>
+        <div class="cw" id="hr">
+          <div class="chip" data-ar="أقل من 60" data-en="<60" onclick="sel1(this,'hr')">أقل من 60</div>
+          <div class="chip" data-ar="60-100" data-en="60-100" onclick="sel1(this,'hr')">60-100</div>
+          <div class="chip" data-ar="100-120" data-en="100-120" onclick="sel1(this,'hr')">100-120</div>
+          <div class="chip" data-ar="أكثر من 120" data-en=">120" onclick="sel1(this,'hr')">أكثر من 120</div>
+        </div>
+      </div>
+      <div class="cg"><div class="cl">الحرارة °C</div>
+        <div class="cw" id="temp">
+          <div class="chip" data-ar="أقل من 36" data-en="<36" onclick="sel1(this,'temp')">أقل من 36</div>
+          <div class="chip" data-ar="36-37.5" data-en="36-37.5" onclick="sel1(this,'temp')">36-37.5</div>
+          <div class="chip" data-ar="37.5-38.5" data-en="37.5-38.5" onclick="sel1(this,'temp')">37.5-38.5</div>
+          <div class="chip" data-ar="أكثر من 38.5" data-en=">38.5" onclick="sel1(this,'temp')">أكثر من 38.5</div>
+        </div>
+      </div>
+      <div class="cg"><div class="cl">SpO2</div>
+        <div class="cw" id="spo2">
+          <div class="chip" data-ar="أقل من 90%" data-en="<90%" onclick="sel1(this,'spo2')">أقل من 90%</div>
+          <div class="chip" data-ar="90-95%" data-en="90-95%" onclick="sel1(this,'spo2')">90-95%</div>
+          <div class="chip" data-ar="95-100%" data-en="95-100%" onclick="sel1(this,'spo2')">95-100%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 3b. CONSCIOUSNESS -->
+<div class="section">
+  <div class="sec-hdr">
+    <div class="sec-hdr-l"><div class="sec-num n3" style="background:rgba(255,165,2,.15);color:var(--warning)">🧠</div><div class="sec-title">تقييم الوعي والحالة العامة</div></div>
+    <button class="collapse-btn" onclick="toggleSec(this)">▲</button>
+  </div>
+  <div class="sec-body">
+    <div class="cg"><div class="cl">مستوى الوعي</div>
+      <div class="cw" id="consciousness">
+        <div class="chip" data-ar="Conscious" data-en="Conscious" onclick="sel1(this,'consciousness')" style="border-color:rgba(46,213,115,.3)">✅ Conscious</div>
+        <div class="chip" data-ar="Alert" data-en="Alert" onclick="sel1(this,'consciousness')" style="border-color:rgba(46,213,115,.3)">👁 Alert</div>
+        <div class="chip" data-ar="Oriented x3" data-en="Oriented x3" onclick="sel1(this,'consciousness')">🧭 Oriented x3</div>
+        <div class="chip" data-ar="Confused" data-en="Confused" onclick="sel1(this,'consciousness')" style="border-color:rgba(255,165,2,.3)">⚠️ Confused</div>
+        <div class="chip" data-ar="Drowsy" data-en="Drowsy" onclick="sel1(this,'consciousness')" style="border-color:rgba(255,165,2,.3)">😴 Drowsy</div>
+        <div class="chip" data-ar="Unresponsive" data-en="Unresponsive" onclick="sel1(this,'consciousness')" style="border-color:rgba(255,71,87,.3)">🚨 Unresponsive</div>
+      </div>
+    </div>
+    <div class="cg"><div class="cl">التوجه</div>
+      <div class="cw" id="orientation">
+        <div class="chip" data-ar="Oriented to time" data-en="Oriented to time" onclick="tog(this)">⏰ الوقت</div>
+        <div class="chip" data-ar="Oriented to place" data-en="Oriented to place" onclick="tog(this)">📍 المكان</div>
+        <div class="chip" data-ar="Oriented to person" data-en="Oriented to person" onclick="tog(this)">👤 الشخص</div>
+      </div>
+    </div>
+    <div class="cg"><div class="cl">GCS (Glasgow Coma Scale)</div>
+      <div class="sl-row" style="margin-top:6px;">
+        <div id="gcsTotalVal" style="font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:700;color:var(--accent);min-width:36px;text-align:center">15</div>
+        <input type="range" min="3" max="15" value="15" id="gcsSlider" oninput="updateGCS(this.value)" style="flex:1;">
+        <span style="font-size:11px;color:var(--text3)">/15</span>
+      </div>
+    </div>
+    <div class="cg"><div class="cl">الحالة العامة عند الوصول</div>
+      <div class="cw" id="generalCondition">
+        <div class="chip" data-ar="مستقر" data-en="Stable" onclick="sel1(this,'generalCondition')" style="border-color:rgba(46,213,115,.3)">✅ مستقر</div>
+        <div class="chip" data-ar="متوسط" data-en="Fair" onclick="sel1(this,'generalCondition')" style="border-color:rgba(255,165,2,.3)">⚡ متوسط</div>
+        <div class="chip" data-ar="حرج" data-en="Critical" onclick="sel1(this,'generalCondition')" style="border-color:rgba(255,71,87,.3)">🚨 حرج</div>
+        <div class="chip" data-ar="مستقر ومتعاون" data-en="Stable & cooperative" onclick="sel1(this,'generalCondition')">مستقر ومتعاون</div>
+        <div class="chip" data-ar="قلق ومتضايق" data-en="Anxious & distressed" onclick="sel1(this,'generalCondition')">قلق ومتضايق</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 4. HISTORY -->
+<div class="section">
+  <div class="sec-hdr">
+    <div class="sec-hdr-l"><div class="sec-num n4">٤</div><div class="sec-title">التاريخ المرضي</div></div>
+    <button class="collapse-btn" onclick="toggleSec(this)">▲</button>
+  </div>
+  <div class="sec-body">
+    <div class="cg"><div class="cl">أمراض مزمنة</div>
+      <div class="cw" id="chronic">
+        <div class="chip" data-ar="سكري ١" data-en="DM1" onclick="tog(this)">سكري ١</div>
+        <div class="chip" data-ar="سكري ٢" data-en="DM2" onclick="tog(this)">سكري ٢</div>
+        <div class="chip" data-ar="ارتفاع ضغط" data-en="HTN" onclick="tog(this)">ارتفاع ضغط</div>
+        <div class="chip" data-ar="أمراض قلب" data-en="IHD" onclick="tog(this)">أمراض قلب</div>
+        <div class="chip" data-ar="فشل كلوي" data-en="CKD" onclick="tog(this)">فشل كلوي</div>
+        <div class="chip" data-ar="ربو" data-en="Asthma" onclick="tog(this)">ربو</div>
+        <div class="chip" data-ar="COPD" data-en="COPD" onclick="tog(this)">COPD</div>
+        <div class="chip" data-ar="سكتة سابقة" data-en="CVA" onclick="tog(this)">سكتة سابقة</div>
+        <div class="chip" data-ar="احتشاء سابق" data-en="Old MI" onclick="tog(this)">احتشاء سابق</div>
+        <div class="chip" data-ar="سرطان" data-en="Cancer" onclick="tog(this)">سرطان</div>
+        <button class="add-chip-btn" onclick="openAdd('chronic',true)">+</button>
+      </div>
+    </div>
+    <div class="cg"><div class="cl">العادات</div>
+      <div class="cw" id="habits">
+        <div class="chip" data-ar="مدخن" data-en="Smoker" onclick="tog(this)">مدخن</div>
+        <div class="chip" data-ar="سابقاً مدخن" data-en="Ex-smoker" onclick="tog(this)">سابقاً مدخن</div>
+        <div class="chip" data-ar="سمنة" data-en="Obesity" onclick="tog(this)">سمنة</div>
+        <button class="add-chip-btn" onclick="openAdd('habits',true)">+</button>
+      </div>
+    </div>
+    <div class="cg"><div class="cl">الأدوية الحالية</div>
+      <div class="clist" id="medsList"></div>
+      <div class="add-row"><input class="add-inp" id="medsInput" placeholder="مثال: Metformin 500mg" onkeydown="if(event.key==='Enter')addC('meds')"><button class="add-btn" onclick="addC('meds')">+</button></div>
+    </div>
+    <div class="cg"><div class="cl">الحساسية</div>
+      <div class="clist" id="allergyList"></div>
+      <div class="add-row"><input class="add-inp" id="allergyInput" placeholder="مثال: Penicillin" onkeydown="if(event.key==='Enter')addC('allergy')"><button class="add-btn" onclick="addC('allergy')">+</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- 5. EXAM & LABS -->
+<div class="section">
+  <div class="sec-hdr">
+    <div class="sec-hdr-l"><div class="sec-num n5">٥</div><div class="sec-title">الفحص والتحاليل</div></div>
+    <button class="collapse-btn" onclick="toggleSec(this)">▲</button>
+  </div>
+  <div class="sec-body">
+    <div class="cg"><div class="cl">الفحص السريري</div>
+      <div class="cw" id="exam">
+        <div class="chip" data-ar="ألم عند الجس" data-en="Tenderness" onclick="tog(this)">ألم عند الجس</div>
+        <div class="chip" data-ar="صلابة البطن" data-en="Guarding" onclick="tog(this)">صلابة البطن</div>
+        <div class="chip" data-ar="علامة روزفينغ" data-en="Rovsing sign" onclick="tog(this)">علامة روزفينغ</div>
+        <div class="chip" data-ar="أصوات رئة غير طبيعية" data-en="Abnormal breath sounds" onclick="tog(this)">أصوات رئة غير طبيعية</div>
+        <div class="chip" data-ar="تورم ساق" data-en="Leg edema" onclick="tog(this)">تورم ساق</div>
+        <div class="chip" data-ar="اصفرار" data-en="Jaundice" onclick="tog(this)">اصفرار</div>
+        <div class="chip" data-ar="نقص حساسية" data-en="Sensory deficit" onclick="tog(this)">نقص حساسية</div>
+        <button class="add-chip-btn" onclick="openAdd('exam',true)">+</button>
+      </div>
+    </div>
+    <div class="cg"><div class="cl">ECG</div>
+      <div class="cw" id="ecg">
+        <div class="chip" data-ar="ST elevation" data-en="ST elevation" onclick="tog(this)">ST elevation</div>
+        <div class="chip" data-ar="ST depression" data-en="ST depression" onclick="tog(this)">ST depression</div>
+        <div class="chip" data-ar="AF" data-en="AF" onclick="tog(this)">AF</div>
+        <div class="chip" data-ar="LBBB" data-en="LBBB" onclick="tog(this)">LBBB</div>
+        <div class="chip" data-ar="طبيعي" data-en="Normal" onclick="tog(this)">طبيعي</div>
+        <button class="add-chip-btn" onclick="openAdd('ecg',true)">+</button>
+      </div>
+    </div>
+    <div class="cg"><div class="cl">التحاليل</div>
+      <div class="cw" id="labs">
+        <div class="chip" data-ar="Troponin مرتفع" data-en="Troponin↑" onclick="tog(this)">Troponin مرتفع</div>
+        <div class="chip" data-ar="WBC مرتفع" data-en="WBC↑" onclick="tog(this)">WBC مرتفع</div>
+        <div class="chip" data-ar="CRP مرتفع" data-en="CRP↑" onclick="tog(this)">CRP مرتفع</div>
+        <div class="chip" data-ar="سكر مرتفع" data-en="Glucose↑" onclick="tog(this)">سكر مرتفع</div>
+        <div class="chip" data-ar="Creatinine مرتفع" data-en="Creatinine↑" onclick="tog(this)">Creatinine مرتفع</div>
+        <div class="chip" data-ar="Hb منخفض" data-en="Hb↓" onclick="tog(this)">Hb منخفض</div>
+        <div class="chip" data-ar="D-dimer مرتفع" data-en="D-dimer↑" onclick="tog(this)">D-dimer مرتفع</div>
+        <div class="chip" data-ar="BNP مرتفع" data-en="BNP↑" onclick="tog(this)">BNP مرتفع</div>
+        <div class="chip" data-ar="HbA1c مرتفع" data-en="HbA1c↑" onclick="tog(this)">HbA1c مرتفع</div>
+        <button class="add-chip-btn" onclick="openAdd('labs',true)">+</button>
+      </div>
+    </div>
+    <div class="cg"><div class="cl">الأشعة</div>
+      <div class="cw" id="imaging">
+        <div class="chip" data-ar="تكاثف رئوي" data-en="Consolidation" onclick="tog(this)">تكاثف رئوي</div>
+        <div class="chip" data-ar="كسر عظمي" data-en="Fracture" onclick="tog(this)">كسر عظمي</div>
+        <div class="chip" data-ar="تحص كلوي" data-en="Renal stone" onclick="tog(this)">تحص كلوي</div>
+        <div class="chip" data-ar="طبيعي" data-en="Normal" onclick="tog(this)">طبيعي</div>
+        <button class="add-chip-btn" onclick="openAdd('imaging',true)">+</button>
+      </div>
+    </div>
+    <div class="cg"><div class="cl">ملاحظات إضافية</div>
+      <div class="clist" id="notesList"></div>
+      <div class="add-row"><input class="add-inp" id="notesInput" placeholder="ملاحظة سريرية..." onkeydown="if(event.key==='Enter')addC('notes')"><button class="add-btn" onclick="addC('notes')">+</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- 6. POLICE REPORT -->
+<div class="section">
+  <div class="sec-hdr">
+    <div class="sec-hdr-l"><div class="sec-num n6">٦</div><div class="sec-title">تقرير الشرطة / الإصابات</div></div>
+    <button class="collapse-btn" onclick="toggleSec(this)">▲</button>
+  </div>
+  <div class="sec-body">
+    <div class="cg"><div class="cl">سبب الإصابة</div>
+      <div class="cw" id="injuryCause">
+        <div class="chip" data-ar="حادث سيارة" data-en="RTA" onclick="sel1(this,'injuryCause')">حادث سيارة</div>
+        <div class="chip" data-ar="حادث دراجة" data-en="Motorcycle accident" onclick="sel1(this,'injuryCause')">حادث دراجة</div>
+        <div class="chip" data-ar="سقوط من ارتفاع" data-en="Fall from height" onclick="sel1(this,'injuryCause')">سقوط من ارتفاع</div>
+        <div class="chip" data-ar="سقوط بسيط" data-en="Simple fall" onclick="sel1(this,'injuryCause')">سقوط بسيط</div>
+        <div class="chip" data-ar="ضرب/اعتداء" data-en="Assault" onclick="sel1(this,'injuryCause')">ضرب/اعتداء</div>
+        <div class="chip" data-ar="حرق" data-en="Burns" onclick="sel1(this,'injuryCause')">حرق</div>
+        <div class="chip" data-ar="جسم حاد" data-en="Sharp object" onclick="sel1(this,'injuryCause')">جسم حاد</div>
+        <div class="chip" data-ar="طلق ناري" data-en="GSW" onclick="sel1(this,'injuryCause')">طلق ناري</div>
+        <button class="add-chip-btn" onclick="openAdd('injuryCause',false)">+</button>
+      </div>
+    </div>
+    <div class="cg"><div class="cl">نوع الجرح</div>
+      <div class="cw" id="woundType">
+        <div class="chip" data-ar="جرح سطحي" data-en="Superficial laceration" onclick="tog(this)">جرح سطحي</div>
+        <div class="chip" data-ar="جرح عميق" data-en="Deep laceration" onclick="tog(this)">جرح عميق</div>
+        <div class="chip" data-ar="كدمة" data-en="Contusion/Bruise" onclick="tog(this)">كدمة</div>
+        <div class="chip" data-ar="خدش" data-en="Abrasion" onclick="tog(this)">خدش</div>
+        <div class="chip" data-ar="حرق درجة أولى" data-en="1st degree burn" onclick="tog(this)">حرق ١°</div>
+        <div class="chip" data-ar="حرق درجة ثانية" data-en="2nd degree burn" onclick="tog(this)">حرق ٢°</div>
+        <div class="chip" data-ar="حرق درجة ثالثة" data-en="3rd degree burn" onclick="tog(this)">حرق ٣°</div>
+        <div class="chip" data-ar="كسر مفتوح" data-en="Open fracture" onclick="tog(this)">كسر مفتوح</div>
+        <div class="chip" data-ar="كسر مغلق" data-en="Closed fracture" onclick="tog(this)">كسر مغلق</div>
+        <button class="add-chip-btn" onclick="openAdd('woundType',true)">+</button>
+      </div>
+    </div>
+    <div class="cg"><div class="cl">موقع الجرح على الجسم</div>
+      <div class="cw" id="woundLoc">
+        <div class="chip" data-ar="رأس" data-en="Head" onclick="tog(this)">رأس</div>
+        <div class="chip" data-ar="وجه" data-en="Face" onclick="tog(this)">وجه</div>
+        <div class="chip" data-ar="رقبة" data-en="Neck" onclick="tog(this)">رقبة</div>
+        <div class="chip" data-ar="صدر" data-en="Chest" onclick="tog(this)">صدر</div>
+        <div class="chip" data-ar="بطن" data-en="Abdomen" onclick="tog(this)">بطن</div>
+        <div class="chip" data-ar="ظهر" data-en="Back" onclick="tog(this)">ظهر</div>
+        <div class="chip" data-ar="ذراع أيمن" data-en="Right arm" onclick="tog(this)">ذراع أيمن</div>
+        <div class="chip" data-ar="ذراع أيسر" data-en="Left arm" onclick="tog(this)">ذراع أيسر</div>
+        <div class="chip" data-ar="يد" data-en="Hand" onclick="tog(this)">يد</div>
+        <div class="chip" data-ar="فخذ أيمن" data-en="Right thigh" onclick="tog(this)">فخذ أيمن</div>
+        <div class="chip" data-ar="فخذ أيسر" data-en="Left thigh" onclick="tog(this)">فخذ أيسر</div>
+        <div class="chip" data-ar="ساق" data-en="Leg" onclick="tog(this)">ساق</div>
+        <div class="chip" data-ar="قدم" data-en="Foot" onclick="tog(this)">قدم</div>
+        <button class="add-chip-btn" onclick="openAdd('woundLoc',true)">+</button>
+      </div>
+    </div>
+    <div class="cg"><div class="cl">الغرز / الخياطة</div>
+      <div class="cw" id="sutureType">
+        <div class="chip" data-ar="لا تحتاج غرز" data-en="No sutures needed" onclick="sel1(this,'sutureType')">لا تحتاج غرز</div>
+        <div class="chip" data-ar="لاصق طبي" data-en="Steri-strips" onclick="sel1(this,'sutureType')">لاصق طبي</div>
+        <div class="chip" data-ar="غرز جلدية" data-en="Skin sutures" onclick="sel1(this,'sutureType')">غرز جلدية</div>
+        <div class="chip" data-ar="غرز عميقة + جلدية" data-en="Deep + skin sutures" onclick="sel1(this,'sutureType')">غرز عميقة + جلدية</div>
+        <div class="chip" data-ar="ستابلز" data-en="Staples" onclick="sel1(this,'sutureType')">ستابلز</div>
+      </div>
+    </div>
+    <div class="num-field">
+      <span class="num-label">عدد الغرز:</span>
+      <input class="num-inp" id="sutureCount" type="number" min="0" max="100" placeholder="0">
+    </div>
+    <div class="cg"><div class="cl">النزيف</div>
+      <div class="cw" id="bleeding">
+        <div class="chip" data-ar="لا يوجد نزيف" data-en="No active bleeding" onclick="sel1(this,'bleeding')">لا يوجد</div>
+        <div class="chip" data-ar="نزيف بسيط توقف" data-en="Minor bleeding, controlled" onclick="sel1(this,'bleeding')">بسيط / توقف</div>
+        <div class="chip" data-ar="نزيف متوسط تم إيقافه" data-en="Moderate, controlled" onclick="sel1(this,'bleeding')">متوسط / تم إيقافه</div>
+        <div class="chip" data-ar="نزيف شديد نشط" data-en="Severe active bleeding" onclick="sel1(this,'bleeding')">شديد / نشط</div>
+      </div>
+    </div>
+    <div class="cg"><div class="cl">تقدير عمر الجرح</div>
+      <div class="cw" id="woundAge">
+        <div class="chip" data-ar="حديث (أقل من 6 ساعات)" data-en="Fresh (<6h)" onclick="sel1(this,'woundAge')">حديث</div>
+        <div class="chip" data-ar="6-24 ساعة" data-en="6-24h" onclick="sel1(this,'woundAge')">6-24 ساعة</div>
+        <div class="chip" data-ar="أكثر من 24 ساعة" data-en=">24h" onclick="sel1(this,'woundAge')">أكثر من 24 ساعة</div>
+        <div class="chip" data-ar="قديم / متكيّف" data-en="Old/Healed" onclick="sel1(this,'woundAge')">قديم</div>
+      </div>
+    </div>
+    <div class="cg"><div class="cl">ملاحظات الإصابة</div>
+      <div class="clist" id="injuryNotesList"></div>
+      <div class="add-row"><input class="add-inp" id="injuryNotesInput" placeholder="وصف إضافي للإصابة..." onkeydown="if(event.key==='Enter')addC('injuryNotes')"><button class="add-btn" onclick="addC('injuryNotes')">+</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- 7. AI DIAGNOSIS -->
+<div class="section">
+  <div class="sec-hdr">
+    <div class="sec-hdr-l"><div class="sec-num n7">٧</div><div class="sec-title" style="color:var(--accent3)">⚡ التشخيص الذكي</div></div>
+    <button class="collapse-btn" onclick="toggleSec(this)">▲</button>
+  </div>
+  <div class="sec-body">
+    <div style="font-size:11px;color:var(--text2);margin-bottom:10px">اختر الأعراض أعلاه — سيظهر هنا التشخيص المقترح تلقائياً بناءً على ما اخترت</div>
+    <div id="diseaseMatches" style="margin-bottom:10px"></div>
+    <button style="width:100%;padding:9px;background:rgba(124,111,255,.1);border:1px solid rgba(124,111,255,.3);border-radius:8px;color:var(--accent3);font-family:'IBM Plex Sans Arabic',sans-serif;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;" onclick="runAIDiagnosis()">
+      <span>🤖</span><span>تشخيص AI دقيق بالذكاء الاصطناعي</span>
+    </button>
+    <div id="aiDiagResult"></div>
+  </div>
+</div>
+
+<button class="btn-gen" onclick="generate()">
+  <span>⚡</span><span>إنشاء التقرير الكامل + رموز ICD-10</span>
+</button>
+
+</div><!-- form-panel -->
+
+<!-- OUTPUT -->
+<div class="output-panel">
+  <div class="out-hdr"><div class="out-title">📋 التقرير السريري</div></div>
+  <div class="placeholder-out" id="outPlaceholder">
+    <div class="big-icon">📄</div>
+    <div style="font-size:13px;color:var(--text2)">املأ البيانات واضغط إنشاء</div>
+    <div style="font-size:11px">سيظهر التقرير الكامل هنا</div>
+  </div>
+  <div class="spinner-out" id="outSpinner">
+    <div class="spin"></div>
+    <div class="spin-steps">
+      <div class="ss active" id="ss1">⟳ تجميع البيانات</div>
+      <div class="ss" id="ss2">⟳ صياغة التاريخ المرضي</div>
+      <div class="ss" id="ss3">⟳ استخراج رموز ICD-10</div>
+      <div class="ss" id="ss4">⟳ مراجعة نهائية</div>
+    </div>
+  </div>
+  <div class="out-content" id="outContent"></div>
+</div>
+
+</div><!-- app -->
+
+<script>
+// ══ DISEASE DATABASE ══════════════════════════════════════
+const DISEASES = [
+  { name:'التهاب الزائدة الدودية', en:'Appendicitis',
+    criteria:{ required:['ألم بطن','بطن سفلي أيمن'], supportive:['غثيان/قيء','حمى','فقدان شهية','WBC مرتفع','CRP مرتفع','صلابة البطن','علامة روزفينغ','إسهال'], ageMin:5, ageMax:40 }},
+  { name:'احتشاء عضلة القلب', en:'Acute MI',
+    criteria:{ required:['ألم صدري'], supportive:['تعرق','ذراع أيسر','فك','ST elevation','Troponin مرتفع','ضيق تنفس','خفقان'], ageMin:40 }},
+  { name:'التهاب رئوي', en:'Pneumonia',
+    criteria:{ required:['سعال','حمى'], supportive:['ضيق تنفس','تكاثف رئوي','WBC مرتفع','CRP مرتفع','أصوات رئة غير طبيعية','قشعريرة'] }},
+  { name:'تحصي كلوي', en:'Renal Calculi',
+    criteria:{ required:['ألم ظهر'], supportive:['حرق في البول','غثيان/قيء','تحص كلوي','ألم متقطع','كثرة التبول'] }},
+  { name:'السكتة الدماغية', en:'Stroke',
+    criteria:{ required:['ضعف عام'], supportive:['صداع','دوخة','نقص حساسية','إغماء','سكتة سابقة'] }},
+  { name:'أزمة ربو', en:'Asthma Attack',
+    criteria:{ required:['ضيق تنفس','سعال'], supportive:['ربو','أصوات رئة غير طبيعية','SpO2 منخفض'] }},
+  { name:'التهاب المرارة', en:'Cholecystitis',
+    criteria:{ required:['ألم بطن','بطن أيمن','بطن علوي'], supportive:['غثيان/قيء','حمى','WBC مرتفع','CRP مرتفع','اصفرار'] }},
+  { name:'أزمة سكري (كيتو)', en:'DKA',
+    criteria:{ required:['سكري ١','سكر مرتفع'], supportive:['غثيان/قيء','عطش شديد','كثرة التبول','ضعف عام','HbA1c مرتفع'] }},
+];
+
+// ══ LANG ══════════════════════════════════════════════════
+let lang = 'ar';
+function setLang(l){
+  lang=l;
+  const isAr=l==='ar';
+  document.getElementById('htmlRoot').lang=l;
+  document.getElementById('htmlRoot').dir=isAr?'rtl':'ltr';
+  document.getElementById('langAr').classList.toggle('active',isAr);
+  document.getElementById('langEn').classList.toggle('active',!isAr);
+  document.querySelectorAll('.chip[data-ar]').forEach(el=>{
+    if(!el.querySelector('.ci-del')) el.textContent = isAr?el.dataset.ar:el.dataset.en;
+  });
+  updateDiseaseMatches();
+  // If a report is already showing, regenerate in the new language
+  if(document.getElementById('outContent').classList.contains('show')){
+    generate();
+  }
+}
+
+// ══ CHIP LOGIC ════════════════════════════════════════════
+function sel1(el,gid){ document.querySelectorAll('#'+gid+' .chip').forEach(c=>c.classList.remove('sel')); el.classList.add('sel'); updateDiseaseMatches(); }
+function tog(el){ el.classList.toggle('sel'); updateDiseaseMatches(); }
+let painScore=null;
+function selPain(el,v){ document.querySelectorAll('#painScale .pb').forEach(b=>b.classList.remove('sel')); el.classList.add('sel'); painScore=v; }
+
+// ══ COLLAPSE ══════════════════════════════════════════════
+function toggleSec(btn){ const body=btn.closest('.section').querySelector('.sec-body'); body.classList.toggle('collapsed'); btn.textContent=body.classList.contains('collapsed')?'▼':'▲'; }
+
+// ══ MODAL ═════════════════════════════════════════════════
+let _addTarget=null, _editEl=null, _editCustomType=null, _editCustomIdx=null;
+function openAdd(gid, isMulti){
+  _addTarget={gid,isMulti}; _editEl=null;
+  document.getElementById('modalTitle').textContent='إضافة خيار';
+  document.getElementById('modalInput').value='';
+  document.getElementById('editModal').classList.add('show');
+  setTimeout(()=>document.getElementById('modalInput').focus(),80);
+}
+function openEditChip(el,gid,isMulti){ _editEl={el,gid,isMulti}; _addTarget=null; document.getElementById('modalTitle').textContent='تعديل'; document.getElementById('modalInput').value=el.dataset.ar||el.textContent.trim(); document.getElementById('editModal').classList.add('show'); setTimeout(()=>document.getElementById('modalInput').focus(),80); }
+function saveModal(){
+  const v=document.getElementById('modalInput').value.trim(); if(!v){closeModal();return;}
+  if(_editCustomType!==null){
+    customData[_editCustomType][_editCustomIdx]=v; renderCList(_editCustomType);
+    _editCustomType=null; closeModal(); return;
+  }
+  if(_addTarget){
+    const {gid,isMulti}=_addTarget;
+    const wrap=document.getElementById(gid);
+    const addBtn=wrap.querySelector('.add-chip-btn');
+    const c=document.createElement('div');
+    c.className='chip'+(isMulti?'':'')+(_addTarget.gid==='complaint'?' red-chip':'');
+    c.dataset.ar=v; c.dataset.en=v; c.textContent=v;
+    c.onclick=function(){ isMulti?tog(this):sel1(this,gid); };
+    c.ondblclick=function(e){e.stopPropagation();openEditChip(this,gid,isMulti);};
+    wrap.insertBefore(c,addBtn);
+  } else if(_editEl){
+    const {el}=_editEl; el.dataset.ar=v; el.dataset.en=v; el.textContent=v;
+  }
+  closeModal(); updateDiseaseMatches();
+}
+function closeModal(){ document.getElementById('editModal').classList.remove('show'); _addTarget=null; _editEl=null; _editCustomType=null; _editCustomIdx=null; }
+document.getElementById('modalInput').addEventListener('keydown',e=>{ if(e.key==='Enter')saveModal(); if(e.key==='Escape')closeModal(); });
+document.querySelectorAll('.chip[data-ar]').forEach(c=>{ c.addEventListener('dblclick',function(e){e.stopPropagation(); const gid=this.parentElement.id; const multi=!['gender','specialty','painChar','duration','sbp','dbp','hr','temp','spo2','injuryCause','sutureType','bleeding','woundAge'].includes(gid); openEditChip(this,gid,multi);}); });
+
+// ══ CUSTOM LISTS ══════════════════════════════════════════
+const customData={meds:[],allergy:[],notes:[],injuryNotes:[]};
+function addC(t){ const inp=document.getElementById(t+'Input'); const v=inp.value.trim(); if(!v)return; customData[t].push(v); renderCList(t); inp.value=''; }
+function removeC(t,i){ customData[t].splice(i,1); renderCList(t); }
+function editC(t,i){ _editCustomType=t; _editCustomIdx=i; document.getElementById('modalTitle').textContent='تعديل'; document.getElementById('modalInput').value=customData[t][i]; _addTarget=null; _editEl=null; document.getElementById('editModal').classList.add('show'); setTimeout(()=>document.getElementById('modalInput').focus(),80); }
+function renderCList(t){ document.getElementById(t+'List').innerHTML=customData[t].map((x,i)=>`<div class="ci"><span class="ci-txt">${x}</span><button class="ci-edit" onclick="editC('${t}',${i})">✏️</button><button class="ci-del" onclick="removeC('${t}',${i})">×</button></div>`).join(''); }
+
+// ══ DISEASE MATCHING ══════════════════════════════════════
+function getSelected(gid){ return [...document.querySelectorAll('#'+gid+' .chip.sel')].map(c=>c.dataset.ar||c.textContent.trim()); }
+function getOne(gid){ const s=document.querySelector('#'+gid+' .chip.sel'); return s?(s.dataset.ar||s.textContent.trim()):''; }
+
+function updateDiseaseMatches(){
+  const age=parseInt(document.getElementById('ageVal').textContent)||35;
+  const allSel=[
+    ...getSelected('complaint'),...getSelected('associated'),...getSelected('painLoc'),
+    ...getSelected('chronic'),...getSelected('exam'),...getSelected('labs'),
+    ...getSelected('ecg'),...getSelected('imaging')
+  ];
+  const results=[];
+  DISEASES.forEach(d=>{
+    const cr=d.criteria;
+    if(cr.ageMin&&age<cr.ageMin)return;
+    if(cr.ageMax&&age>cr.ageMax)return;
+    const req=cr.required||[];
+    const sup=cr.supportive||[];
+    const reqMet=req.filter(r=>allSel.some(s=>s.includes(r)||r.includes(s))).length;
+    if(reqMet===0&&req.length>0)return;
+    const reqPct=req.length>0?reqMet/req.length:1;
+    const supMet=sup.filter(r=>allSel.some(s=>s.includes(r)||r.includes(s))).length;
+    const supPct=sup.length>0?supMet/sup.length:0;
+    const score=Math.round((reqPct*0.6+supPct*0.4)*100);
+    if(score>=20) results.push({...d,score,reqMet,req,sup,supMet,allSel});
+  });
+  results.sort((a,b)=>b.score-a.score);
+  const container=document.getElementById('diseaseMatches');
+  if(!results.length){container.innerHTML=`<div style="font-size:11px;color:var(--text3);text-align:center;padding:10px">اختر أعراضاً لظهور التشخيصات المحتملة</div>`;return;}
+  container.innerHTML=results.slice(0,5).map(r=>{
+    const matchClass=r.score>=70?'match-high':r.score>=45?'match-med':'match-low';
+    const crit=r.req.map(x=>`<span class="dc ${r.allSel.some(s=>s.includes(x)||x.includes(s))?'present':'missing'}">${x}</span>`).join('');
+    const supp=r.sup.slice(0,6).map(x=>`<span class="dc ${r.allSel.some(s=>s.includes(x)||x.includes(s))?'present':'absent'}">${x}</span>`).join('');
+    return `<div class="disease-item">
+      <div class="disease-header" onclick="this.nextElementSibling.classList.toggle('open')">
+        <span class="disease-name">${lang==='ar'?r.name:r.en}</span>
+        <span class="disease-match ${matchClass}">${r.score}%</span>
+      </div>
+      <div class="disease-body">
+        <div style="font-size:10px;color:var(--text3);margin-bottom:5px">معايير أساسية:</div>
+        <div class="disease-criteria">${crit}</div>
+        <div style="font-size:10px;color:var(--text3);margin:6px 0 4px">أعراض داعمة:</div>
+        <div class="disease-criteria">${supp}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ══ AI DIAGNOSIS ══════════════════════════════════════════
+async function runAIDiagnosis(){
+  const d=collect();
+  const btn=document.querySelector('[onclick="runAIDiagnosis()"]');
+  btn.textContent='⏳ جاري التحليل...'; btn.disabled=true;
+  document.getElementById('aiDiagResult').innerHTML='';
+  try{
+    const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
+      model:"claude-sonnet-4-5",max_tokens:600,
+      system:`You are a clinical diagnosis AI. Given patient data, return ONLY valid JSON:
+{"diagnoses":[{"name":"Arabic name","nameEn":"English","probability":85,"reason":"Arabic reason in 1 sentence"}],"urgent":true/false,"urgentReason":"if urgent, why in Arabic"}
+Max 4 diagnoses, probability 5-95, sorted descending. Be clinically accurate.`,
+      messages:[{role:"user",content:`Age:${d.age} Gender:${d.gender} Complaints:${d.complaints.join(',')} Pain:${d.painLoc.join(',')} Associated:${d.associated.join(',')} Duration:${d.duration} Vitals:BP ${d.sbp}/${d.dbp} HR:${d.hr} Temp:${d.temp} PMH:${d.chronic.join(',')} Exam:${d.exam.join(',')} Labs:${d.labs.join(',')} ECG:${d.ecg.join(',')}`}]
+    })});
+    const data=await res.json();
+    const text=(data.content||[]).map(i=>i.text||'').join('');
+    let p; try{let c=text.replace(/```json\s*/g,'').replace(/```\s*/g,'').trim();const m=c.match(/\{[\s\S]*\}/);if(m)c=m[0];p=JSON.parse(c);}catch(e){throw new Error('parse error');}
+    let html='<div class="ai-suggest"><div class="ai-suggest-title">🤖 تقدير AI'+( p.urgent?` <span style="background:rgba(255,71,87,.2);color:var(--red);font-size:9px;padding:2px 7px;border-radius:6px;font-weight:700">⚠️ عاجل</span>`:'')+`</div>`;
+    if(p.urgent&&p.urgentReason) html+=`<div style="font-size:11px;color:var(--red);margin-bottom:8px;padding:6px 9px;background:rgba(255,71,87,.08);border-radius:7px">⚠️ ${p.urgentReason}</div>`;
+    p.diagnoses.forEach(dx=>{
+      const pc=dx.probability>=70?'prob-h':dx.probability>=45?'prob-m':'prob-l';
+      html+=`<div class="ai-diag"><div><div class="ai-diag-name">${dx.name}</div><div class="ai-diag-sub">${dx.reason}</div></div><div class="ai-prob ${pc}">${dx.probability}%</div></div>`;
+    });
+    html+='</div>';
+    document.getElementById('aiDiagResult').innerHTML=html;
+  }catch(e){ document.getElementById('aiDiagResult').innerHTML=`<div class="err-box">⚠️ خطأ في AI</div>`; }
+  btn.innerHTML='<span>🤖</span><span>تشخيص AI دقيق</span>'; btn.disabled=false;
+}
+
+// ══ CLEAR ════════════════════════════════════════════════
+function clearAll(){
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('sel'));
+  document.querySelectorAll('.pb').forEach(b=>b.classList.remove('sel'));
+  document.getElementById('ageSlider').value=35; document.getElementById('ageVal').textContent='35';
+  painScore=null;
+  ['meds','allergy','notes','injuryNotes'].forEach(t=>{customData[t]=[];renderCList(t);});
+  document.getElementById('ticketNum').value='';
+  document.getElementById('sutureCount').value='';
+  document.getElementById('outContent').classList.remove('show');
+  document.getElementById('outPlaceholder').style.display='flex';
+  document.getElementById('diseaseMatches').innerHTML='';
+  document.getElementById('aiDiagResult').innerHTML='';
+}
+
+// ══ GCS SLIDER ═══════════════════════════════════════════
+function updateGCS(val){
+  const n=parseInt(val);
+  const el=document.getElementById("gcsTotalVal");
+  el.textContent=n;
+  el.style.color=n>=13?"var(--success)":n>=9?"var(--warning)":"var(--red)";
+}
+function calcGCS(){
+  const sl=document.getElementById("gcsSlider");
+  return sl?parseInt(sl.value):null;
+}
+
+// ══ COLLECT ══════════════════════════════════════════════
+function collect(){
+  const gcs=calcGCS();
+  return {
+    ticket:document.getElementById('ticketNum').value.trim(),
+    gender:getOne('gender'), age:document.getElementById('ageVal').textContent,
+    specialty:getOne('specialty'), complaints:getSelected('complaint'),
+    painLoc:getSelected('painLoc'), painChar:getOne('painChar'),
+    painScore:painScore!==null?painScore:'لم يُحدد',
+    associated:getSelected('associated'), duration:getOne('duration'),
+    sbp:getOne('sbp'), dbp:getOne('dbp'), hr:getOne('hr'), temp:getOne('temp'), spo2:getOne('spo2'),
+    consciousness:getOne('consciousness'),
+    orientation:getSelected('orientation'),
+    gcs:gcs, generalCondition:getOne('generalCondition'),
+    chronic:getSelected('chronic'), habits:getSelected('habits'),
+    meds:customData.meds, allergies:customData.allergy,
+    exam:getSelected('exam'), ecg:getSelected('ecg'),
+    imaging:getSelected('imaging'), labs:getSelected('labs'), notes:customData.notes,
+    injuryCause:getOne('injuryCause'), woundType:getSelected('woundType'),
+    woundLoc:getSelected('woundLoc'), sutureType:getOne('sutureType'),
+    sutureCount:document.getElementById('sutureCount').value||'0',
+    bleeding:getOne('bleeding'), woundAge:getOne('woundAge'),
+    injuryNotes:customData.injuryNotes
+  };
+}
+
+async function generate(){
+  const d=collect();
+  if(!d.complaints.length&&!d.chronic.length&&!d.injuryCause){alert('اختر الشكوى الرئيسية أو التاريخ المرضي أولاً');return;}
+  document.getElementById('outPlaceholder').style.display='none';
+  document.getElementById('outContent').classList.remove('show');
+  document.getElementById('outSpinner').classList.add('show');
+  const steps=['ss1','ss2','ss3','ss4']; let si=0;
+  const iv=setInterval(()=>{ if(si>0){const p=document.getElementById(steps[si-1]);p.classList.remove('active');p.classList.add('done');} if(si<steps.length){document.getElementById(steps[si]).classList.add('active');si++;}else clearInterval(iv); },600);
+  const isAr=lang==='ar';
+  const hasInjury=!!d.injuryCause;
+  const sys=`You are a senior medical documentation specialist supporting the treating physician. Return ONLY valid JSON, no markdown.
+${isAr?'Write all narrative text in formal Arabic.':'Write all narrative text in formal English.'}
+
+IMPORTANT RULES:
+1. The report must SUPPORT and ASSIST the physician — never criticize, question, or second-guess clinical decisions. Frame everything positively and professionally.
+2. For the police_report: describe injuries objectively using standard clinical wound terminology (laceration, contusion, abrasion, fracture etc.). Do NOT use any forensic medicine terms, do NOT mention "forensic examination", "forensic assessment", "medico-legal examination", or any equivalent Arabic phrases like "الفحص الشرعي" or "الطب الشرعي" when describing the clinical findings. Describe as a treating clinician's wound documentation only.
+3. For insurance_tip: provide practical, specific advice to help ensure the case documentation supports full insurance coverage. Mention which clinical findings and ICD codes strengthen the claim, recommend any additional documentation that would help approval, and highlight any coverage pitfalls to avoid. Be an advocate for the patient and physician.
+
+Format:
+{
+  "history": "Professional 3-5 sentence narrative highlighting chief complaints",
+  "assessment": "Clinical assessment written to support the physician's clinical reasoning and management plan",
+  "police_report": ${hasInjury?'"Clinical wound documentation paragraph for official report — objective injury description using treating physician terminology only, no forensic examination references"':"null"},
+  "primary_icd": [{"code":"X00.0","nameEn":"","nameAr":"","confidence":90,"reason":""}],
+  "secondary_icd": [{"code":"","nameEn":"","nameAr":"","confidence":80,"reason":""}],
+  "insurance_tip": "Specific actionable insurance coverage advice: which findings support the claim, recommended additional documentation, ICD codes that maximize coverage, and any approval pitfalls to avoid",
+  "red_flags": []
+}`;
+  const msg=`Ticket:${d.ticket||'N/A'} | ${d.gender} ${d.age}y | ${d.specialty||'general'}
+CONSCIOUSNESS: ${d.consciousness||'not assessed'} | Orientation: ${d.orientation.join(', ')||'not assessed'} | GCS: ${d.gcs||'not assessed'}/15 | General condition: ${d.generalCondition||'not assessed'}
+CHIEF COMPLAINTS: ${d.complaints.join(', ')||'none'}
+Associated symptoms: ${d.associated.join(', ')||'none'}
+Pain: ${d.painLoc.join(', ')} | ${d.painChar} | score ${d.painScore}/10 | ${d.duration}
+Vitals: BP ${d.sbp}/${d.dbp} | HR ${d.hr} | Temp ${d.temp} | SpO2 ${d.spo2}
+PMH: ${d.chronic.join(', ')||'none'} | Habits: ${d.habits.join(', ')||'none'}
+Meds: ${d.meds.join(', ')||'none'} | Allergies: ${d.allergies.join(', ')||'none'}
+Exam: ${d.exam.join(', ')||'none'} | ECG: ${d.ecg.join(', ')||'none'}
+Imaging: ${d.imaging.join(', ')||'none'} | Labs: ${d.labs.join(', ')||'none'}
+Notes: ${d.notes.join('. ')||'none'}
+${hasInjury?`INJURY: cause=${d.injuryCause} | wounds=${d.woundType.join(',')} | location=${d.woundLoc.join(',')} | sutures=${d.sutureType} x${d.sutureCount} | bleeding=${d.bleeding} | wound age=${d.woundAge} | notes=${d.injuryNotes.join('. ')||'none'}`:''}`;
+  try{
+    const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-5",max_tokens:1800,system:sys,messages:[{role:"user",content:msg}]})});
+    clearInterval(iv); steps.forEach(s=>{const el=document.getElementById(s);el.classList.remove('active');el.classList.add('done');});
+    const data=await res.json();
+    const text=(data.content||[]).map(i=>i.text||'').join('');
+    let p; try{let c=text.trim().replace(/```json\s*/g,'').replace(/```\s*/g,'').trim();const m=c.match(/\{[\s\S]*\}/);if(m)c=m[0];p=JSON.parse(c);}catch(e){throw new Error('خطأ في تحليل الاستجابة');}
+    p.ticket=d.ticket; p.complaints=d.complaints;
+    renderOutput(p,isAr,d);
+  }catch(err){
+    document.getElementById('outSpinner').classList.remove('show');
+    document.getElementById('outContent').innerHTML=`<div class="err-box">⚠️ ${err.message}</div>`;
+    document.getElementById('outContent').classList.add('show');
+  }
+}
+
+// ══ RENDER ════════════════════════════════════════════════
+function renderOutput(p,isAr,d){
+  document.getElementById("outSpinner").classList.remove("show");
+  let html="";
+
+  if(p.ticket) html+=`<div style="background:rgba(124,111,255,.08);border:1px solid rgba(124,111,255,.2);border-radius:9px;padding:8px 12px;margin-bottom:10px;font-size:12px;color:var(--accent3)">📁 ${isAr?"رقم الملف":"File #"}: <strong style="font-family:'IBM Plex Mono',monospace">${p.ticket}</strong></div>`;
+
+  // Consciousness banner
+  if(d&&(d.consciousness||d.generalCondition)){
+    const cons=d.consciousness||"";
+    const cond=d.generalCondition||"";
+    const ori=d.orientation&&d.orientation.length?" / "+d.orientation.join(" / "):"";
+    const gcsStr=d.gcs?" | GCS: "+d.gcs+"/15":"";
+    const isBad=cons.includes("Unresponsive")||cond.includes("حرج");
+    const isGood=cons.includes("Conscious")||cons.includes("Alert")||cond.includes("مستقر");
+    const color=isBad?"rgba(255,71,87,.15)":isGood?"rgba(46,213,115,.1)":"rgba(255,165,2,.1)";
+    const bc=isBad?"rgba(255,71,87,.35)":isGood?"rgba(46,213,115,.3)":"rgba(255,165,2,.3)";
+    const icon=isBad?"🚨":isGood?"✅":"⚠️";
+    html+=`<div style="background:${color};border:1px solid ${bc};border-radius:10px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <span style="font-size:16px">${icon}</span>
+      <div><div style="font-size:11px;font-weight:700;color:var(--text)">${[cons+ori,gcsStr].filter(Boolean).join("")}</div>${cond?`<div style="font-size:10px;color:var(--text2);margin-top:2px">${cond}</div>`:""}</div>
+    </div>`;
+  }
+
+  if(p.red_flags&&p.red_flags.length) html+=`<div style="background:rgba(255,71,87,.08);border:1px solid rgba(255,71,87,.25);border-radius:10px;padding:12px;margin-bottom:10px"><div style="font-size:9px;color:#ff4757;font-weight:700;letter-spacing:1px;margin-bottom:6px">🚨 ${isAr?"تنبيهات عاجلة":"Urgent Alerts"}</div>${p.red_flags.map(f=>`<div style="font-size:11px;color:#ff6b81;margin-bottom:3px">• ${f}</div>`).join("")}</div>`;
+
+  // Helper to make editable section
+  function editSec(id,title,text,borderColor){
+    const bc=borderColor?`border-color:${borderColor};`:"";
+    const btnColor=borderColor||"var(--accent)";
+    const btnBg=borderColor?"rgba(255,165,2,.1)":"rgba(0,212,255,.1)";
+    return `<div class="out-sec" style="${bc}">
+      <div class="out-sec-t" style="display:flex;align-items:center;justify-content:space-between;${borderColor?'color:'+borderColor:''}">
+        <span>${title}</span>
+        <button onclick="toggleEdit('${id}-view','${id}-edit')" style="background:${btnBg};border:1px solid ${btnColor}40;border-radius:6px;color:${btnColor};font-size:10px;padding:3px 9px;cursor:pointer;font-family:'IBM Plex Sans Arabic',sans-serif">✏️ ${isAr?"تعديل":"Edit"}</button>
+      </div>
+      <div class="out-txt" id="${id}-view">${text}</div>
+      <textarea id="${id}-edit" style="display:none;width:100%;background:var(--surface2);border:1px solid ${btnColor};border-radius:8px;padding:10px;color:var(--text);font-family:'IBM Plex Sans Arabic',sans-serif;font-size:12px;line-height:1.8;resize:vertical;min-height:90px;margin-top:8px;direction:rtl">${text.replace(/<[^>]+>/g,"")}</textarea>
+    </div>`;
+  }
+
+  let histHtml=p.history||"";
+  // Remove [RED] markers the AI inserts
+  histHtml = histHtml.replace(/\[RED\/?[^\]]*\]/gi, "");
+  (p.complaints||[]).forEach(c=>{ histHtml=histHtml.replace(new RegExp(c,"g"),`<strong>${c}</strong>`); });
+  html+=editSec("history",isAr?"التاريخ المرضي":"Medical History",histHtml);
+  if(p.assessment) html+=editSec("assessment",isAr?"التقييم السريري":"Assessment",p.assessment);
+  if(p.police_report) html+=editSec("police","⚖️ "+(isAr?"وصف الإصابات للشرطة":"Medico-legal Report"),p.police_report,"var(--warning)");
+
+  if(p.primary_icd&&p.primary_icd.length){
+    html+=`<div class="out-sec"><div class="out-sec-t">${isAr?"رموز ICD-10 الرئيسية":"Primary ICD-10"}</div>`;
+    p.primary_icd.forEach(c=>{ html+=`<div class="icd-p"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px"><div class="icd-code-b">${c.code}</div><span class="badge bp">${isAr?"رئيسي":"Primary"}</span></div><div style="font-size:12px;font-weight:600;color:var(--text)">${c.nameEn}</div><div style="font-size:11px;color:var(--text2);margin-bottom:7px">${c.nameAr}</div><div class="conf-row"><span>${isAr?"الثقة":"Confidence"}</span><span class="conf-pct">${c.confidence}%</span></div><div class="conf-bar"><div class="conf-fill" data-w="${c.confidence}" style="width:0%"></div></div>${c.reason?`<div style="font-size:10px;color:var(--text3);margin-top:5px">${c.reason}</div>`:""}</div>`; });
+    html+=`</div>`;
+  }
+  if(p.secondary_icd&&p.secondary_icd.length){
+    html+=`<div class="out-sec"><div class="out-sec-t">${isAr?"ICD-10 الثانوية":"Secondary ICD-10"}</div>`;
+    p.secondary_icd.forEach(c=>{ html+=`<div class="icd-s"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px"><div class="icd-code-s">${c.code}</div><span class="badge bs">${isAr?"ثانوي":"Secondary"}</span></div><div style="font-size:12px;color:var(--text)">${c.nameEn}</div><div style="font-size:11px;color:var(--text2);margin-bottom:5px">${c.nameAr}</div><div class="conf-bar"><div class="conf-fill" data-w="${c.confidence}" style="width:0%"></div></div></div>`; });
+    html+=`</div>`;
+  }
+  if(p.insurance_tip) html+=`<div class="tip-box"><div class="tip-t">💡 ${isAr?"نصيحة التأمين — لدعم تغطية الحالة":"Insurance Tip — Supporting Coverage"}</div>${p.insurance_tip}</div>`;
+
+  html+=`<div class="out-sec" style="border-color:rgba(124,111,255,.2)">
+    <div class="out-sec-t" style="color:var(--accent3)">📝 ${isAr?"ملاحظات يدوية إضافية":"Manual Notes"}</div>
+    <textarea id="extra-notes" placeholder="${isAr?"أضف أي ملاحظة قبل النسخ...":"Add notes before copying..."}" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px;color:var(--text);font-family:'IBM Plex Sans Arabic',sans-serif;font-size:12px;line-height:1.8;resize:vertical;min-height:60px;margin-top:6px;direction:rtl"></textarea>
+  </div>`;
+
+  html+=`<button class="copy-btn" id="copyHistBtn" onclick="copyHist(${isAr})">📋 ${isAr?"نسخ التقرير كاملاً للنظام":"Copy Full Report"}</button>`;
+  html+=`<button class="btn-save" id="saveBtn" onclick="savePatient()">💾 ${isAr?"حفظ الحالة في سجل المرضى":"Save Case to Patient Records"}</button>`;
+
+  window._rp=p; window._rd=d;
+  document.getElementById("outContent").innerHTML=html;
+  document.getElementById("outContent").classList.add("show");
+  setTimeout(()=>document.querySelectorAll(".conf-fill").forEach(el=>{el.style.width=el.dataset.w+"%";}),150);
+}
+
+function toggleEdit(vid,eid){
+  const v=document.getElementById(vid), e=document.getElementById(eid);
+  if(!v||!e) return;
+  if(e.style.display!=="none"){ v.textContent=e.value; e.style.display="none"; v.style.display=""; }
+  else { e.value=v.textContent; v.style.display="none"; e.style.display="block"; e.focus(); }
+}
+
+
+function copyHist(){
+  navigator.clipboard.writeText(window._copyTxt||'').then(()=>{
+    const btn=document.getElementById('copyHistBtn');
+    btn.innerHTML='✅ تم النسخ — الصقه في نظام المستشفى';
+    setTimeout(()=>{btn.innerHTML='📋 نسخ التقرير كاملاً للنظام';},3000);
+  });
+}
+
+// ══ SAVE SYSTEM ═══════════════════════════════════════════
+function getSavedPatients(){ try{return JSON.parse(localStorage.getItem('medcode_patients')||'[]');}catch{return[];} }
+function setSavedPatients(arr){ localStorage.setItem('medcode_patients',JSON.stringify(arr)); }
+
+function savePatient(){
+  const p=window._rp, d=window._rd;
+  if(!p||!d){alert('لا يوجد تقرير لحفظه');return;}
+  const ticket=d.ticket||('PT-'+Date.now());
+  const existing=getSavedPatients();
+  const idx=existing.findIndex(x=>x.ticket===ticket);
+  const record={
+    ticket,
+    savedAt:new Date().toISOString(),
+    lang:lang,
+    data:d,
+    report:p
+  };
+  if(idx>=0) existing[idx]=record;
+  else existing.unshift(record);
+  setSavedPatients(existing);
+  const btn=document.getElementById('saveBtn');
+  btn.innerHTML='✅ تم الحفظ!';
+  btn.style.borderColor='var(--success)';
+  btn.style.color='var(--success)';
+  setTimeout(()=>{btn.innerHTML='💾 حفظ الحالة في سجل المرضى';btn.style.borderColor='';btn.style.color='';},2500);
+}
+
+// ══ PATIENTS PAGE ═════════════════════════════════════════
+function openPatientsPage(){
+  renderPatientsList();
+  document.getElementById('patientsOverlay').classList.add('show');
+}
+function closePatientsPage(){ document.getElementById('patientsOverlay').classList.remove('show'); }
+
+function renderPatientsList(){
+  const pts=getSavedPatients();
+  const grid=document.getElementById('patientsGrid');
+  document.getElementById('ptCountBadge').textContent=pts.length+' حالة';
+  if(!pts.length){
+    grid.innerHTML=`<div class="pt-empty"><div class="pt-empty-icon">🏥</div><div style="font-size:14px;color:var(--text2);margin-bottom:6px">لا توجد حالات محفوظة</div><div style="font-size:11px">احفظ حالة من شاشة التقرير</div></div>`;
+    return;
+  }
+  grid.innerHTML=pts.map((pt,i)=>{
+    const d=pt.data, p=pt.report;
+    const dt=new Date(pt.savedAt);
+    const timeStr=dt.toLocaleDateString('ar-SA')+' '+dt.toLocaleTimeString('ar-SA',{hour:'2-digit',minute:'2-digit'});
+    const complaints=(d.complaints||[]).slice(0,4).map(c=>`<span class="pt-chip">${c}</span>`).join('');
+    const vitals=[d.sbp&&d.dbp?`BP: ${d.sbp}/${d.dbp}`:'',d.hr?`HR: ${d.hr}`:'',d.temp?`T: ${d.temp}`:'',d.spo2?`SpO2: ${d.spo2}`:''].filter(Boolean).join(' · ');
+    const icds=[...(p.primary_icd||[]),...(p.secondary_icd||[])].slice(0,4);
+    const icdBadges=icds.map(c=>`<span class="pt-icd-badge" onclick="copyIcdCard(event,'${c.code}')">${c.code}</span>`).join('');
+    const condIcon=d.generalCondition?.includes('حرج')||d.generalCondition?.includes('Critical')?'🚨':d.generalCondition?.includes('متوسط')||d.generalCondition?.includes('Fair')?'⚠️':'✅';
+    return `<div class="pt-card">
+      <div class="pt-card-hdr">
+        <div>
+          <div class="pt-ticket">📁 ${pt.ticket}</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:3px">${condIcon} ${d.gender||''} · ${d.age||'?'} سنة · ${d.specialty||''}</div>
+        </div>
+        <div class="pt-time">${timeStr}</div>
+      </div>
+      ${complaints?`<div class="pt-complaints">${complaints}</div>`:''}
+      ${vitals?`<div class="pt-info-row"><span class="pt-info-item">⚕️ ${vitals}</span></div>`:''}
+      ${icdBadges?`<div class="pt-icd-row">${icdBadges}</div>`:''}
+      <div class="pt-card-footer">
+        <button class="pt-btn pt-btn-view" onclick="openDetailPage(${i})">📄 عرض التفاصيل</button>
+        <button class="pt-btn pt-btn-del" onclick="deletePatient(event,${i})">🗑 حذف</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function copyIcdCard(e,code){
+  e.stopPropagation();
+  navigator.clipboard.writeText(code).then(()=>{
+    e.target.textContent='✓ '+code;
+    e.target.classList.add('copied');
+    setTimeout(()=>{e.target.textContent=code;e.target.classList.remove('copied');},2000);
+  });
+}
+
+function deletePatient(e,idx){
+  e.stopPropagation();
+  if(!confirm('حذف هذه الحالة؟'))return;
+  const pts=getSavedPatients();
+  pts.splice(idx,1);
+  setSavedPatients(pts);
+  renderPatientsList();
+}
+
+// ══ DETAIL PAGE ═══════════════════════════════════════════
+function openDetailPage(idx){
+  const pts=getSavedPatients();
+  const pt=pts[idx];
+  if(!pt)return;
+  window._detailPt=pt;
+  const dt=new Date(pt.savedAt);
+  document.getElementById('detailTicket').textContent='📁 '+pt.ticket;
+  document.getElementById('detailTime').textContent=dt.toLocaleDateString('ar-SA')+' '+dt.toLocaleTimeString('ar-SA',{hour:'2-digit',minute:'2-digit'});
+  renderDetailBody(pt);
+  document.getElementById('detailOverlay').classList.add('show');
+}
+function closeDetailPage(){ document.getElementById('detailOverlay').classList.remove('show'); }
+
+function renderDetailBody(pt){
+  const d=pt.data, p=pt.report;
+  const isAr=pt.lang==='ar';
+  let html='';
+
+  // Patient banner
+  const condIcon=d.generalCondition?.includes('حرج')||d.generalCondition?.includes('Critical')?'🚨':d.generalCondition?.includes('متوسط')||d.generalCondition?.includes('Fair')?'⚠️':'✅';
+  html+=`<div class="detail-sec" style="background:rgba(0,212,255,.04);border-color:rgba(0,212,255,.2)">
+    <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center">
+      <div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:4px">المريض</div>
+        <div style="font-size:16px;font-weight:700">${condIcon} ${d.gender||'—'} · ${d.age||'?'} ${isAr?'سنة':'y'}</div>
+        <div style="font-size:11px;color:var(--text2);margin-top:3px">${d.specialty||''} ${d.consciousness?'· '+d.consciousness:''}</div>
+      </div>
+      ${d.complaints?.length?`<div style="flex:1"><div style="font-size:10px;color:var(--text3);margin-bottom:5px">الشكوى الرئيسية</div><div style="display:flex;flex-wrap:wrap;gap:4px">${d.complaints.map(c=>`<span style="padding:4px 10px;border-radius:10px;background:rgba(255,71,87,.12);border:1px solid rgba(255,71,87,.25);font-size:11px;color:#ff6b81;font-weight:600">${c}</span>`).join('')}</div></div>`:''}
+    </div>
+  </div>`;
+
+  // Vitals
+  const vitals=[
+    {l:'SBP',v:d.sbp},{l:'DBP',v:d.dbp},{l:'HR',v:d.hr},
+    {l:'Temp',v:d.temp},{l:'SpO2',v:d.spo2},{l:'GCS',v:d.gcs?d.gcs+'/15':null}
+  ].filter(x=>x.v);
+  if(vitals.length) html+=`<div class="detail-sec"><div class="detail-sec-title">العلامات الحيوية</div>
+    <div class="vital-grid">${vitals.map(x=>`<div class="vital-box"><div class="vital-val">${x.v}</div><div class="vital-lbl">${x.l}</div></div>`).join('')}</div></div>`;
+
+  // ICD codes — main feature, big and copyable
+  const allIcd=[...(p.primary_icd||[]).map(x=>({...x,type:'primary'})),...(p.secondary_icd||[]).map(x=>({...x,type:'secondary'}))];
+  if(allIcd.length){
+    html+=`<div class="detail-sec"><div class="detail-sec-title">${isAr?'رموز ICD-10':'ICD-10 Codes'}</div>`;
+    allIcd.forEach((c,i)=>{
+      const isPri=c.type==='primary';
+      html+=`<div class="detail-icd-item" style="${isPri?'border-color:rgba(0,212,255,.3);background:rgba(0,212,255,.06)':''}">
+        <div class="detail-icd-code">${c.code}</div>
+        <div class="detail-icd-info">
+          <div style="font-size:13px;font-weight:600;color:var(--text)">${c.nameEn}</div>
+          <div style="font-size:11px;color:var(--text2)">${c.nameAr}</div>
+          <div style="font-size:10px;color:var(--text3);margin-top:2px">${isPri?(isAr?'رئيسي':'Primary'):(isAr?'ثانوي':'Secondary')} · ${c.confidence}%</div>
+        </div>
+        <button class="btn-copy-icd" id="icd-copy-${i}" onclick="copyIcdDetail(${i},'${c.code}','${c.nameEn}')">📋 ${isAr?'نسخ':'Copy'}</button>
+      </div>`;
+    });
+    html+=`<button onclick="copyAllIcds()" style="width:100%;padding:9px;margin-top:6px;background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.25);border-radius:8px;color:var(--accent);font-family:'IBM Plex Sans Arabic',sans-serif;font-size:12px;font-weight:700;cursor:pointer;" id="copyAllIcdsBtn">📋 ${isAr?'نسخ كل الرموز دفعة واحدة':'Copy All Codes'}</button>`;
+    html+=`</div>`;
+  }
+
+  // History
+  if(p.history) html+=`<div class="detail-sec"><div class="detail-sec-title">${isAr?'التاريخ المرضي':'Medical History'}</div><div class="detail-txt">${p.history}</div></div>`;
+  if(p.assessment) html+=`<div class="detail-sec"><div class="detail-sec-title">${isAr?'التقييم السريري':'Assessment'}</div><div class="detail-txt">${p.assessment}</div></div>`;
+  if(p.police_report) html+=`<div class="detail-sec" style="border-color:rgba(255,165,2,.25)"><div class="detail-sec-title" style="color:var(--warning)">⚖️ ${isAr?'وصف الإصابات':'Injury Report'}</div><div class="detail-txt">${p.police_report}</div></div>`;
+  if(p.insurance_tip) html+=`<div class="detail-sec" style="border-color:rgba(0,255,157,.15)"><div class="detail-sec-title" style="color:var(--accent2)">💡 ${isAr?'نصيحة التأمين':'Insurance Tip'}</div><div class="detail-txt">${p.insurance_tip}</div></div>`;
+
+  // PMH / Meds
+  const pmhItems=[...(d.chronic||[]),...(d.habits||[])];
+  if(pmhItems.length||d.meds?.length||d.allergies?.length){
+    html+=`<div class="detail-sec"><div class="detail-sec-title">${isAr?'التاريخ المرضي السابق':'Past Medical History'}</div>`;
+    if(pmhItems.length) html+=`<div style="margin-bottom:7px;font-size:11px;color:var(--text2)">${pmhItems.join(' · ')}</div>`;
+    if(d.meds?.length) html+=`<div style="font-size:11px;color:var(--text2)"><strong style="color:var(--text3);font-size:10px">الأدوية: </strong>${d.meds.join(', ')}</div>`;
+    if(d.allergies?.length) html+=`<div style="font-size:11px;color:#ff6b81;margin-top:4px"><strong style="font-size:10px">⚠️ حساسية: </strong>${d.allergies.join(', ')}</div>`;
+    html+=`</div>`;
+  }
+
+  html+=`<div style="height:20px"></div>`;
+  document.getElementById('detailBody').innerHTML=html;
+  window._detailIcds=allIcd;
+  window._detailIsAr=isAr;
+}
+
+function copyIcdDetail(idx,code,name){
+  const txt=code+' — '+name;
+  navigator.clipboard.writeText(txt).then(()=>{
+    const btn=document.getElementById('icd-copy-'+idx);
+    btn.textContent='✅ تم';
+    btn.classList.add('done');
+    setTimeout(()=>{btn.innerHTML='📋 '+(window._detailIsAr?'نسخ':'Copy');btn.classList.remove('done');},2000);
+  });
+}
+
+function copyAllIcds(){
+  const icds=window._detailIcds||[];
+  const txt=icds.map(c=>c.code+' — '+c.nameEn+(c.nameAr?' / '+c.nameAr:'')).join('\n');
+  navigator.clipboard.writeText(txt).then(()=>{
+    const btn=document.getElementById('copyAllIcdsBtn');
+    btn.textContent='✅ تم نسخ كل الرموز';
+    btn.style.color='var(--accent2)';
+    btn.style.borderColor='rgba(0,255,157,.4)';
+    setTimeout(()=>{btn.innerHTML='📋 '+(window._detailIsAr?'نسخ كل الرموز دفعة واحدة':'Copy All Codes');btn.style.color='';btn.style.borderColor='';},2500);
+  });
+}
+
+// ══ EXCEL EXPORT ══════════════════════════════════════════
+function exportToExcel(){
+  const pts=getSavedPatients();
+  if(!pts.length){alert('لا توجد بيانات للتصدير');return;}
+
+  const btn=document.getElementById('exportBtn');
+  btn.innerHTML='<span>⏳</span><span>جاري التصدير...</span>';
+  btn.disabled=true;
+
+  const rows=[];
+
+  // Header row
+  rows.push([
+    'رقم الملف','تاريخ الحفظ','الوقت','الجنس','العمر','التخصص',
+    'الشكوى الرئيسية','الحالة العامة','مستوى الوعي','GCS',
+    'BP (SBP/DBP)','النبض HR','الحرارة','SpO2',
+    'الأمراض المزمنة','الأدوية','الحساسية',
+    'ICD رئيسي - كود','ICD رئيسي - انجليزي','ICD رئيسي - عربي',
+    'ICD ثانوي 1','ICD ثانوي 2','ICD ثانوي 3',
+    'التقييم السريري','سبب الإصابة','نوع الجرح','موقع الجرح',
+    'التاريخ المرضي','نصيحة التأمين'
+  ]);
+
+  pts.forEach(pt=>{
+    const d=pt.data||{}, p=pt.report||{};
+    const dt=new Date(pt.savedAt);
+    const dateStr=dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');
+    const timeStr=String(dt.getHours()).padStart(2,'0')+':'+String(dt.getMinutes()).padStart(2,'0');
+    const pri=p.primary_icd||[];
+    const sec=p.secondary_icd||[];
+    const histPlain=(p.history||'').replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim();
+    const assessPlain=(p.assessment||'').replace(/<[^>]+>/g,'').trim();
+    const insPlain=(p.insurance_tip||'').replace(/<[^>]+>/g,'').trim();
+    const bp=d.sbp&&d.dbp?d.sbp+'/'+d.dbp:(d.sbp||d.dbp||'');
+
+    rows.push([
+      pt.ticket||'',
+      dateStr,
+      timeStr,
+      d.gender||'',
+      d.age||'',
+      d.specialty||'',
+      (d.complaints||[]).join(' | '),
+      d.generalCondition||'',
+      d.consciousness||'',
+      d.gcs||'',
+      bp,
+      d.hr||'',
+      d.temp||'',
+      d.spo2||'',
+      (d.chronic||[]).join(' | '),
+      (d.meds||[]).join(' | '),
+      (d.allergies||[]).join(' | '),
+      pri[0]?.code||'',
+      pri[0]?.nameEn||'',
+      pri[0]?.nameAr||'',
+      sec[0]?.code||'',
+      sec[1]?.code||'',
+      sec[2]?.code||'',
+      assessPlain.substring(0,400),
+      d.injuryCause||'',
+      (d.woundType||[]).join(' | '),
+      (d.woundLoc||[]).join(' | '),
+      histPlain.substring(0,400),
+      insPlain.substring(0,300)
+    ]);
+  });
+
+  // Build CSV with UTF-8 BOM for full Arabic support in Excel
+  const BOM='\uFEFF';
+  const csv=rows.map(row=>
+    row.map(cell=>{
+      const s=String(cell===null||cell===undefined?'':cell);
+      if(s.includes(',')||s.includes('"')||s.includes('\n')||s.includes('\r')){
+        return '"'+s.replace(/"/g,'""')+'"';
+      }
+      return s;
+    }).join(',')
+  ).join('\r\n');
+
+  const blob=new Blob([BOM+csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  const now=new Date();
+  const fname='MedCode_'+
+    now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0')+
+    '_'+String(now.getHours()).padStart(2,'0')+String(now.getMinutes()).padStart(2,'0')+
+    '.csv';
+  a.href=url; a.download=fname; a.click();
+  URL.revokeObjectURL(url);
+
+  setTimeout(()=>{
+    btn.innerHTML='<span>📊</span><span>تصدير Excel</span>';
+    btn.disabled=false;
+  },1500);
+}
+updateDiseaseMatches();
+</script>
+</body>
+</html>
