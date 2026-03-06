@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>ICD Fast</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600;700&family=IBM+Plex+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+:root{--bg:#07090f;--s1:#0f1420;--s2:#161d2e;--border:#1c2a42;--cyan:#00d4ff;--green:#00ff9d;--amber:#ffb700;--red:#ff4455;--text:#dde8ff;--dim:#5a7099;}
+body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;}
+header{padding:14px 16px 10px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:50;}
+.logo-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.logo{font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:700;color:var(--cyan);}
+.logo span{color:var(--green);}
+.badge{font-size:9px;background:rgba(0,255,157,.1);border:1px solid rgba(0,255,157,.2);color:var(--green);border-radius:4px;padding:2px 7px;font-family:'IBM Plex Mono',monospace;letter-spacing:1px;}
+.search-wrap{position:relative;}
+.search-inp{width:100%;background:var(--s2);border:1.5px solid var(--border);border-radius:10px;padding:11px 42px 11px 14px;color:var(--text);font-family:'IBM Plex Sans Arabic',sans-serif;font-size:14px;transition:border-color .2s;}
+.search-inp:focus{outline:none;border-color:var(--cyan);}
+.search-inp::placeholder{color:var(--dim);}
+.search-clear{position:absolute;left:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--dim);cursor:pointer;font-size:16px;display:none;padding:4px;}
+.search-clear.show{display:block;}
+.chips-section{padding:10px 16px 0;}
+.cat-row{margin-bottom:10px;}
+.cat-title{font-size:9px;color:var(--dim);letter-spacing:.8px;margin-bottom:5px;}
+.chips-wrap{display:flex;flex-wrap:wrap;gap:5px;}
+.chip{padding:6px 12px;border-radius:20px;border:1px solid var(--border);background:var(--s2);color:var(--dim);font-size:12px;cursor:pointer;transition:all .15s;user-select:none;}
+.chip:active{transform:scale(.94);}
+.chip.on{border-color:var(--cyan);background:rgba(0,212,255,.12);color:var(--cyan);font-weight:600;}
+.chip.cat-cardiac.on{border-color:var(--red);background:rgba(255,68,85,.1);color:var(--red);}
+.chip.cat-gi.on{border-color:#a78bfa;background:rgba(167,139,250,.1);color:#a78bfa;}
+.chip.cat-resp.on{border-color:var(--green);background:rgba(0,255,157,.08);color:var(--green);}
+.chip.cat-injury.on{border-color:var(--amber);background:rgba(255,183,0,.1);color:var(--amber);}
+.results{padding:10px 16px 100px;}
+.result-count{font-size:10px;color:var(--dim);margin-bottom:8px;font-family:'IBM Plex Mono',monospace;}
+.icd-card{background:var(--s1);border:1px solid var(--border);border-radius:12px;margin-bottom:7px;}
+.icd-card.top{border-color:rgba(0,212,255,.35);background:rgba(0,212,255,.03);}
+.icd-card.med{border-color:rgba(255,183,0,.25);}
+.icd-card-inner{padding:11px 13px;display:flex;align-items:center;gap:11px;}
+.icd-code{font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:700;color:var(--cyan);min-width:68px;line-height:1;}
+.icd-card.med .icd-code{color:var(--amber);}
+.icd-info{flex:1;min-width:0;}
+.icd-en{font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px;}
+.icd-ar{font-size:11px;color:var(--dim);}
+.icd-match{font-size:9px;margin-top:3px;color:var(--dim);}
+.icd-match strong{color:var(--cyan);}
+.icd-card.med .icd-match strong{color:var(--amber);}
+.copy-btn{background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.2);border-radius:8px;color:var(--cyan);font-size:11px;padding:8px 11px;cursor:pointer;white-space:nowrap;font-family:'IBM Plex Mono',monospace;font-weight:700;transition:all .15s;flex-shrink:0;}
+.copy-btn:active{transform:scale(.92);}
+.copy-btn.done{background:rgba(0,255,157,.12);border-color:rgba(0,255,157,.3);color:var(--green);}
+.icd-card.med .copy-btn{background:rgba(255,183,0,.06);border-color:rgba(255,183,0,.2);color:var(--amber);}
+.empty{text-align:center;padding:50px 20px;color:var(--dim);}
+.empty-icon{font-size:40px;opacity:.2;margin-bottom:10px;}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(70px);background:var(--green);color:#000;font-size:12px;font-weight:700;padding:9px 22px;border-radius:20px;transition:transform .25s;z-index:200;pointer-events:none;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.clear-sel{width:calc(100% - 32px);margin:8px 16px 0;padding:8px;background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--dim);font-family:'IBM Plex Sans Arabic',sans-serif;font-size:12px;cursor:pointer;display:none;}
+.clear-sel.show{display:block;}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo-row">
+    <div class="logo">ICD<span>Fast</span></div>
+    <div class="badge">OFFLINE · بدون انترنت</div>
+  </div>
+  <div class="search-wrap">
+    <input class="search-inp" id="searchInp" placeholder="ابحث: chest pain أو K35 أو ألم بطن..." oninput="onSearch()">
+    <button class="search-clear" id="searchClear" onclick="clearSearch()">✕</button>
+  </div>
+  <div style="display:flex;gap:7px;margin-top:9px;align-items:center;">
+    <input id="fileNum" placeholder="رقم الملف" style="flex:1;background:var(--s2);border:1.5px solid var(--border);border-radius:9px;padding:9px 12px;color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:13px;direction:ltr;outline:none;transition:border-color .2s;" onfocus="this.style.borderColor='var(--cyan)'" onblur="this.style.borderColor='var(--border)'">
+    <button onclick="exportRow()" style="background:rgba(0,255,157,.1);border:1.5px solid rgba(0,255,157,.3);border-radius:9px;color:var(--green);font-family:'IBM Plex Sans Arabic',sans-serif;font-size:12px;font-weight:700;padding:9px 13px;cursor:pointer;white-space:nowrap;transition:all .15s;" id="exportBtn">📊 تصدير</button>
+  </div>
+</header>
+<button class="clear-sel" id="clearSelBtn" onclick="clearAll()">✕ مسح الاختيارات</button>
+<div class="chips-section">
+
+  <div class="cat-row"><div class="cat-title">❤️ قلب / صدر</div><div class="chips-wrap">
+    <div class="chip cat-cardiac" data-s="chest pain cardiac" onclick="tog(this)">ألم صدري</div>
+    <div class="chip cat-cardiac" data-s="chest pressure tightness" onclick="tog(this)">ضغط صدر</div>
+    <div class="chip cat-cardiac" data-s="palpitations" onclick="tog(this)">خفقان</div>
+    <div class="chip cat-cardiac" data-s="syncope" onclick="tog(this)">إغماء</div>
+    <div class="chip cat-cardiac" data-s="pre-syncope near faint" onclick="tog(this)">شبه إغماء</div>
+    <div class="chip cat-cardiac" data-s="hypertension" onclick="tog(this)">ارتفاع ضغط</div>
+    <div class="chip cat-cardiac" data-s="shortness of breath dyspnea" onclick="tog(this)">ضيق تنفس</div>
+    <div class="chip cat-cardiac" data-s="heart failure edema" onclick="tog(this)">قصور قلب</div>
+    <div class="chip cat-cardiac" data-s="leg swelling edema" onclick="tog(this)">تورم ساقين</div>
+    <div class="chip cat-cardiac" data-s="orthopnea lying flat dyspnea" onclick="tog(this)">ضيق تنفس باستلقاء</div>
+    <div class="chip cat-cardiac" data-s="diaphoresis sweating" onclick="tog(this)">تعرق</div>
+    <div class="chip cat-cardiac" data-s="left arm pain radiation" onclick="tog(this)">ألم ذراع أيسر</div>
+    <div class="chip cat-cardiac" data-s="jaw pain radiation cardiac" onclick="tog(this)">ألم فك</div>
+    <div class="chip cat-cardiac" data-s="bradycardia slow heart" onclick="tog(this)">بطء قلب</div>
+    <div class="chip cat-cardiac" data-s="tachycardia fast heart rate" onclick="tog(this)">تسرع قلب</div>
+    <div class="chip cat-cardiac" data-s="st elevation ecg" onclick="tog(this)">ST elevation</div>
+    <div class="chip cat-cardiac" data-s="troponin elevated cardiac marker" onclick="tog(this)">Troponin مرتفع</div>
+    <div class="chip cat-cardiac" data-s="atrial fibrillation irregular" onclick="tog(this)">رجفان أذيني</div>
+    <div class="chip cat-cardiac" data-s="pulmonary embolism dvt" onclick="tog(this)">جلطة رئوية</div>
+    <div class="chip cat-cardiac" data-s="cardiac arrest resuscitation" onclick="tog(this)">توقف قلب</div>
+    <div class="chip cat-cardiac" data-s="chest pain pleuritic" onclick="tog(this)">ألم صدري جنبي</div>
+  </div></div>
+
+  <div class="cat-row"><div class="cat-title">🫁 تنفسي</div><div class="chips-wrap">
+    <div class="chip cat-resp" data-s="cough" onclick="tog(this)">سعال</div>
+    <div class="chip cat-resp" data-s="cough productive sputum" onclick="tog(this)">سعال بلغمي</div>
+    <div class="chip cat-resp" data-s="hemoptysis blood cough" onclick="tog(this)">سعال دموي</div>
+    <div class="chip cat-resp" data-s="fever cough pneumonia" onclick="tog(this)">حمى + سعال</div>
+    <div class="chip cat-resp" data-s="asthma wheezing" onclick="tog(this)">ربو / أزيز</div>
+    <div class="chip cat-resp" data-s="copd" onclick="tog(this)">COPD</div>
+    <div class="chip cat-resp" data-s="hypoxia oxygen saturation low" onclick="tog(this)">نقص أكسجين</div>
+    <div class="chip cat-resp" data-s="pneumothorax sudden dyspnea" onclick="tog(this)">استرواح صدري</div>
+    <div class="chip cat-resp" data-s="stridor upper airway" onclick="tog(this)">صرير تنفسي</div>
+    <div class="chip cat-resp" data-s="sore throat pharyngitis" onclick="tog(this)">التهاب حلق</div>
+    <div class="chip cat-resp" data-s="rhinorrhea runny nose" onclick="tog(this)">زكام</div>
+    <div class="chip cat-resp" data-s="hoarseness voice" onclick="tog(this)">بحة صوت</div>
+    <div class="chip cat-resp" data-s="sinusitis nasal congestion" onclick="tog(this)">التهاب جيوب أنفية</div>
+    <div class="chip cat-resp" data-s="epistaxis nose bleed" onclick="tog(this)">رعاف / نزيف أنف</div>
+    <div class="chip cat-resp" data-s="respiratory failure intubation" onclick="tog(this)">فشل تنفسي</div>
+    <div class="chip cat-resp" data-s="pleural effusion" onclick="tog(this)">انصباب جنبي</div>
+  </div></div>
+
+  <div class="cat-row"><div class="cat-title">🫃 بطن / هضمي</div><div class="chips-wrap">
+    <div class="chip cat-gi" data-s="abdominal pain right lower rlq" onclick="tog(this)">ألم بطن أيمن سفلي</div>
+    <div class="chip cat-gi" data-s="abdominal pain right upper ruq" onclick="tog(this)">ألم بطن أيمن علوي</div>
+    <div class="chip cat-gi" data-s="abdominal pain left lower llq" onclick="tog(this)">ألم بطن أيسر سفلي</div>
+    <div class="chip cat-gi" data-s="epigastric pain upper central" onclick="tog(this)">ألم بطن وسط علوي</div>
+    <div class="chip cat-gi" data-s="periumbilical pain around navel" onclick="tog(this)">ألم حول السرة</div>
+    <div class="chip cat-gi" data-s="diffuse abdominal pain generalized" onclick="tog(this)">ألم بطن منتشر</div>
+    <div class="chip cat-gi" data-s="nausea vomiting" onclick="tog(this)">غثيان / قيء</div>
+    <div class="chip cat-gi" data-s="hematemesis blood vomit" onclick="tog(this)">قيء دموي</div>
+    <div class="chip cat-gi" data-s="diarrhea" onclick="tog(this)">إسهال</div>
+    <div class="chip cat-gi" data-s="bloody diarrhea dysentery" onclick="tog(this)">إسهال دموي</div>
+    <div class="chip cat-gi" data-s="constipation" onclick="tog(this)">إمساك</div>
+    <div class="chip cat-gi" data-s="jaundice liver" onclick="tog(this)">اصفرار</div>
+    <div class="chip cat-gi" data-s="rectal bleeding gi bleed melena" onclick="tog(this)">نزيف شرجي / قطران</div>
+    <div class="chip cat-gi" data-s="abdominal distension bloating" onclick="tog(this)">انتفاخ بطن</div>
+    <div class="chip cat-gi" data-s="rigid abdomen guarding peritonitis" onclick="tog(this)">بطن صلب</div>
+    <div class="chip cat-gi" data-s="heartburn acid reflux gerd" onclick="tog(this)">حرقة / ارتداد</div>
+    <div class="chip cat-gi" data-s="dysphagia difficulty swallowing" onclick="tog(this)">صعوبة بلع</div>
+    <div class="chip cat-gi" data-s="anorexia loss appetite" onclick="tog(this)">فقدان شهية</div>
+    <div class="chip cat-gi" data-s="ascites abdominal fluid" onclick="tog(this)">استسقاء بطني</div>
+    <div class="chip cat-gi" data-s="rectal pain anal" onclick="tog(this)">ألم شرجي</div>
+    <div class="chip cat-gi" data-s="hiccups" onclick="tog(this)">حازوقة مستمرة</div>
+    <div class="chip cat-gi" data-s="weight loss unintentional" onclick="tog(this)">فقدان وزن</div>
+  </div></div>
+
+  <div class="cat-row"><div class="cat-title">🧠 عصبي / رأس</div><div class="chips-wrap">
+    <div class="chip" data-s="headache" onclick="tog(this)">صداع</div>
+    <div class="chip" data-s="thunderclap headache sudden severe" onclick="tog(this)">صداع رعدي مفاجئ</div>
+    <div class="chip" data-s="migraine photophobia" onclick="tog(this)">شقيقة / حساسية ضوء</div>
+    <div class="chip" data-s="stroke weakness hemiplegia" onclick="tog(this)">ضعف / شلل نصفي</div>
+    <div class="chip" data-s="facial droop unilateral" onclick="tog(this)">شلل وجه</div>
+    <div class="chip" data-s="speech difficulty dysarthria aphasia" onclick="tog(this)">صعوبة كلام</div>
+    <div class="chip" data-s="seizure convulsion epilepsy" onclick="tog(this)">تشنج</div>
+    <div class="chip" data-s="status epilepticus prolonged seizure" onclick="tog(this)">تشنج مستمر</div>
+    <div class="chip" data-s="dizziness vertigo" onclick="tog(this)">دوخة / دوار</div>
+    <div class="chip" data-s="altered consciousness confusion" onclick="tog(this)">اضطراب وعي</div>
+    <div class="chip" data-s="coma unresponsive" onclick="tog(this)">غيبوبة</div>
+    <div class="chip" data-s="neck stiffness meningismus" onclick="tog(this)">تيبس رقبة</div>
+    <div class="chip" data-s="memory loss amnesia" onclick="tog(this)">فقدان ذاكرة</div>
+    <div class="chip" data-s="vision loss sudden blindness" onclick="tog(this)">فقدان بصر مفاجئ</div>
+    <div class="chip" data-s="diplopia double vision" onclick="tog(this)">رؤية مزدوجة</div>
+    <div class="chip" data-s="tinnitus ear ringing" onclick="tog(this)">طنين أذن</div>
+    <div class="chip" data-s="numbness tingling paresthesia" onclick="tog(this)">تنميل / وخز</div>
+    <div class="chip" data-s="tremor shaking" onclick="tog(this)">رعشة</div>
+    <div class="chip" data-s="ataxia gait unsteady" onclick="tog(this)">تعثر مشية</div>
+    <div class="chip" data-s="nystagmus eye movement" onclick="tog(this)">رأرأة عينية</div>
+    <div class="chip" data-s="postictal confusion after seizure" onclick="tog(this)">تشوش ما بعد نوبة</div>
+  </div></div>
+
+  <div class="cat-row"><div class="cat-title">🦴 عضلي / هيكلي / إصابات</div><div class="chips-wrap">
+    <div class="chip cat-injury" data-s="fracture bone" onclick="tog(this)">كسر عظمي</div>
+    <div class="chip cat-injury" data-s="open fracture compound" onclick="tog(this)">كسر مفتوح</div>
+    <div class="chip cat-injury" data-s="hip fracture femur" onclick="tog(this)">كسر عنق الفخذ</div>
+    <div class="chip cat-injury" data-s="laceration wound cut" onclick="tog(this)">جرح / تمزق</div>
+    <div class="chip cat-injury" data-s="burn thermal" onclick="tog(this)">حرق</div>
+    <div class="chip cat-injury" data-s="burn chemical" onclick="tog(this)">حرق كيميائي</div>
+    <div class="chip cat-injury" data-s="back pain lumbar" onclick="tog(this)">ألم ظهر أسفل</div>
+    <div class="chip cat-injury" data-s="neck pain cervical" onclick="tog(this)">ألم رقبة</div>
+    <div class="chip cat-injury" data-s="joint pain swelling arthralgia" onclick="tog(this)">ألم / تورم مفصل</div>
+    <div class="chip cat-injury" data-s="knee pain swelling" onclick="tog(this)">ألم ركبة</div>
+    <div class="chip cat-injury" data-s="shoulder pain rotator" onclick="tog(this)">ألم كتف</div>
+    <div class="chip cat-injury" data-s="trauma injury head" onclick="tog(this)">إصابة رأس</div>
+    <div class="chip cat-injury" data-s="chest trauma rib" onclick="tog(this)">إصابة صدر</div>
+    <div class="chip cat-injury" data-s="abdominal trauma blunt" onclick="tog(this)">إصابة بطن</div>
+    <div class="chip cat-injury" data-s="spinal injury cervical" onclick="tog(this)">إصابة عمود فقري</div>
+    <div class="chip cat-injury" data-s="dislocation joint" onclick="tog(this)">خلع مفصل</div>
+    <div class="chip cat-injury" data-s="sprain ligament" onclick="tog(this)">التواء / تمدد رباط</div>
+    <div class="chip cat-injury" data-s="muscle weakness generalized" onclick="tog(this)">ضعف عضلي</div>
+    <div class="chip cat-injury" data-s="gout uric acid joint" onclick="tog(this)">نقرس</div>
+    <div class="chip cat-injury" data-s="morning stiffness rheumatoid" onclick="tog(this)">تيبس صباحي</div>
+    <div class="chip cat-injury" data-s="road traffic accident rta" onclick="tog(this)">حادث سيارة</div>
+    <div class="chip cat-injury" data-s="fall from height" onclick="tog(this)">سقوط من ارتفاع</div>
+    <div class="chip cat-injury" data-s="gunshot wound gsw" onclick="tog(this)">طلق ناري</div>
+    <div class="chip cat-injury" data-s="stab wound sharp" onclick="tog(this)">طعنة / جسم حاد</div>
+    <div class="chip cat-injury" data-s="assault blunt trauma" onclick="tog(this)">اعتداء جسدي</div>
+  </div></div>
+
+  <div class="cat-row"><div class="cat-title">💧 كلى / بولي / تناسلي</div><div class="chips-wrap">
+    <div class="chip" data-s="dysuria urinary burning uti" onclick="tog(this)">حرقة بول / UTI</div>
+    <div class="chip" data-s="renal colic flank kidney stone" onclick="tog(this)">مغص كلوي</div>
+    <div class="chip" data-s="hematuria blood urine" onclick="tog(this)">بول دموي</div>
+    <div class="chip" data-s="renal failure aki oliguria" onclick="tog(this)">فشل كلوي</div>
+    <div class="chip" data-s="urinary retention inability void" onclick="tog(this)">احتباس بول</div>
+    <div class="chip" data-s="frequency urgency overactive bladder" onclick="tog(this)">كثرة تبول</div>
+    <div class="chip" data-s="pyelonephritis upper uti fever flank" onclick="tog(this)">التهاب حوض الكلية</div>
+    <div class="chip" data-s="prostate bph lower urinary" onclick="tog(this)">تضخم بروستات</div>
+    <div class="chip" data-s="scrotal pain testicular torsion" onclick="tog(this)">ألم خصية</div>
+    <div class="chip" data-s="vaginal bleeding female" onclick="tog(this)">نزيف مهبلي</div>
+    <div class="chip" data-s="vaginal discharge pelvic inflammatory" onclick="tog(this)">إفرازات مهبلية</div>
+    <div class="chip" data-s="pelvic pain female" onclick="tog(this)">ألم حوض</div>
+    <div class="chip" data-s="ectopic pregnancy female abdominal" onclick="tog(this)">حمل خارج رحم</div>
+    <div class="chip" data-s="dysmenorrhea menstrual pain" onclick="tog(this)">آلام دورة شهرية</div>
+    <div class="chip" data-s="urinary incontinence leaking" onclick="tog(this)">سلس بول</div>
+  </div></div>
+
+  <div class="cat-row"><div class="cat-title">🌡️ عام / عدوى / حمى</div><div class="chips-wrap">
+    <div class="chip" data-s="fever pyrexia high temperature" onclick="tog(this)">حمى</div>
+    <div class="chip" data-s="rigors chills shaking fever" onclick="tog(this)">رج / قشعريرة</div>
+    <div class="chip" data-s="sepsis infection fever" onclick="tog(this)">إنتان / سبسيس</div>
+    <div class="chip" data-s="hypotension low blood pressure shock" onclick="tog(this)">ضغط منخفض / صدمة</div>
+    <div class="chip" data-s="fatigue weakness general malaise" onclick="tog(this)">إرهاق عام</div>
+    <div class="chip" data-s="weight loss unintentional" onclick="tog(this)">فقدان وزن غير مقصود</div>
+    <div class="chip" data-s="night sweats fever" onclick="tog(this)">تعرق ليلي</div>
+    <div class="chip" data-s="lymphadenopathy swollen lymph nodes" onclick="tog(this)">تضخم غدد ليمفاوية</div>
+    <div class="chip" data-s="pallor anemia pale" onclick="tog(this)">شحوب</div>
+    <div class="chip" data-s="jaundice yellow skin" onclick="tog(this)">اصفرار جلد</div>
+    <div class="chip" data-s="rash skin eruption" onclick="tog(this)">طفح جلدي</div>
+    <div class="chip" data-s="pruritus itching skin" onclick="tog(this)">حكة جلد</div>
+    <div class="chip" data-s="cellulitis wound infection skin" onclick="tog(this)">التهاب جلد موضعي</div>
+    <div class="chip" data-s="herpes zoster shingles" onclick="tog(this)">هربس نطاقي</div>
+    <div class="chip" data-s="abscess pus collection" onclick="tog(this)">خراج / تقيح</div>
+  </div></div>
+
+  <div class="cat-row"><div class="cat-title">🍬 غدد صماء / استقلاب</div><div class="chips-wrap">
+    <div class="chip" data-s="diabetes hyperglycemia glucose" onclick="tog(this)">ارتفاع سكر / سكري</div>
+    <div class="chip" data-s="hypoglycemia low glucose" onclick="tog(this)">انخفاض سكر</div>
+    <div class="chip" data-s="dka ketoacidosis diabetic" onclick="tog(this)">حماض كيتوني DKA</div>
+    <div class="chip" data-s="polydipsia excessive thirst" onclick="tog(this)">عطش شديد</div>
+    <div class="chip" data-s="polyuria excessive urination" onclick="tog(this)">كثرة تبول مفرطة</div>
+    <div class="chip" data-s="thyroid hyperthyroidism" onclick="tog(this)">فرط نشاط درقية</div>
+    <div class="chip" data-s="hypothyroidism thyroid low" onclick="tog(this)">قصور درقية</div>
+    <div class="chip" data-s="adrenal crisis addison" onclick="tog(this)">أزمة كظرية</div>
+    <div class="chip" data-s="hyponatremia low sodium" onclick="tog(this)">نقص صوديوم</div>
+    <div class="chip" data-s="hyperkalemia high potassium" onclick="tog(this)">ارتفاع بوتاسيوم</div>
+    <div class="chip" data-s="hypercalcemia high calcium" onclick="tog(this)">ارتفاع كالسيوم</div>
+    <div class="chip" data-s="dehydration fluid loss" onclick="tog(this)">جفاف</div>
+    <div class="chip" data-s="obesity bmi overweight" onclick="tog(this)">سمنة</div>
+  </div></div>
+
+  <div class="cat-row"><div class="cat-title">🩸 دم / أورام</div><div class="chips-wrap">
+    <div class="chip" data-s="anemia pallor fatigue" onclick="tog(this)">فقر دم</div>
+    <div class="chip" data-s="iron deficiency anemia" onclick="tog(this)">نقص حديد</div>
+    <div class="chip" data-s="thrombocytopenia low platelets bleeding" onclick="tog(this)">نقص صفائح</div>
+    <div class="chip" data-s="dvt deep vein thrombosis leg" onclick="tog(this)">جلطة وريد عميق</div>
+    <div class="chip" data-s="bleeding disorder coagulopathy" onclick="tog(this)">اضطراب تخثر</div>
+    <div class="chip" data-s="tumor mass lump" onclick="tog(this)">كتلة / ورم</div>
+    <div class="chip" data-s="lymphoma leukemia hematological" onclick="tog(this)">سرطان دم / ليمفوما</div>
+    <div class="chip" data-s="sickle cell crisis pain" onclick="tog(this)">أزمة خلايا منجلية</div>
+  </div></div>
+
+  <div class="cat-row"><div class="cat-title">👁️ عين / أذن / أنف / حلق</div><div class="chips-wrap">
+    <div class="chip" data-s="eye pain redness conjunctivitis" onclick="tog(this)">ألم / احمرار عين</div>
+    <div class="chip" data-s="eye discharge conjunctivitis" onclick="tog(this)">إفرازات عين</div>
+    <div class="chip" data-s="vision blurred loss" onclick="tog(this)">رؤية ضبابية</div>
+    <div class="chip" data-s="ear pain otalgia otitis" onclick="tog(this)">ألم أذن</div>
+    <div class="chip" data-s="ear discharge otorrhea" onclick="tog(this)">إفرازات أذن</div>
+    <div class="chip" data-s="hearing loss deafness" onclick="tog(this)">فقدان سمع</div>
+    <div class="chip" data-s="tonsillitis sore throat exudate" onclick="tog(this)">التهاب لوزتين</div>
+    <div class="chip" data-s="foreign body eye ear nose" onclick="tog(this)">جسم غريب</div>
+    <div class="chip" data-s="periorbital swelling eye lid" onclick="tog(this)">تورم حول العين</div>
+  </div></div>
+
+  <div class="cat-row"><div class="cat-title">🧬 نفسي / سلوكي</div><div class="chips-wrap">
+    <div class="chip" data-s="anxiety panic attack" onclick="tog(this)">قلق / هلع</div>
+    <div class="chip" data-s="depression low mood" onclick="tog(this)">اكتئاب</div>
+    <div class="chip" data-s="psychosis hallucination" onclick="tog(this)">ذهان / هلوسة</div>
+    <div class="chip" data-s="aggressive violent behavior" onclick="tog(this)">عدوانية / عنف</div>
+    <div class="chip" data-s="suicidal ideation self harm" onclick="tog(this)">أفكار انتحارية</div>
+    <div class="chip" data-s="acute confusion delirium" onclick="tog(this)">هذيان حاد</div>
+    <div class="chip" data-s="insomnia sleep disorder" onclick="tog(this)">أرق / اضطراب نوم</div>
+    <div class="chip" data-s="substance abuse intoxication alcohol" onclick="tog(this)">تعاطي / إدمان</div>
+  </div></div>
+
+  <div class="cat-row"><div class="cat-title">💊 تسمم / جرعات زائدة</div><div class="chips-wrap">
+    <div class="chip" data-s="drug overdose poisoning toxic" onclick="tog(this)">تسمم / جرعة زائدة</div>
+    <div class="chip" data-s="paracetamol acetaminophen overdose" onclick="tog(this)">جرعة باراسيتامول</div>
+    <div class="chip" data-s="opioid overdose narcotic" onclick="tog(this)">جرعة أفيونية</div>
+    <div class="chip" data-s="organophosphate pesticide poisoning" onclick="tog(this)">تسمم مبيدات</div>
+    <div class="chip" data-s="carbon monoxide poisoning" onclick="tog(this)">تسمم أول أكسيد كربون</div>
+    <div class="chip" data-s="food poisoning ingestion" onclick="tog(this)">تسمم غذائي</div>
+    <div class="chip" data-s="snake bite envenomation" onclick="tog(this)">لدغة ثعبان</div>
+    <div class="chip" data-s="alcohol intoxication ethanol" onclick="tog(this)">تسمم كحولي</div>
+    <div class="chip" data-s="allergic reaction anaphylaxis urticaria" onclick="tog(this)">تحسسي / أنافيلاكسي</div>
+  </div></div>
+
+  <div class="cat-row"><div class="cat-title">🤰 نسائية / توليد</div><div class="chips-wrap">
+    <div class="chip" data-s="vaginal bleeding female pregnancy" onclick="tog(this)">نزيف مهبلي</div>
+    <div class="chip" data-s="ectopic pregnancy female abdominal" onclick="tog(this)">حمل خارج رحم</div>
+    <div class="chip" data-s="threatened abortion miscarriage" onclick="tog(this)">إجهاض مهدد</div>
+    <div class="chip" data-s="labor contractions delivery" onclick="tog(this)">مخاض / طلق</div>
+    <div class="chip" data-s="preeclampsia hypertension pregnancy" onclick="tog(this)">تسمم الحمل</div>
+    <div class="chip" data-s="pelvic inflammatory disease pid" onclick="tog(this)">التهاب حوض PID</div>
+    <div class="chip" data-s="ovarian cyst torsion" onclick="tog(this)">كيس مبيض / التواء</div>
+    <div class="chip" data-s="dysmenorrhea menstrual pain" onclick="tog(this)">آلام دورة شهرية</div>
+    <div class="chip" data-s="postpartum hemorrhage bleeding" onclick="tog(this)">نزيف ما بعد الولادة</div>
+  </div></div>
+
+</div>
+<div class="results" id="results">
+  <div class="empty"><div class="empty-icon">🔍</div><div>اختر أعراضاً أو ابحث</div></div>
+</div>
+<div class="toast" id="toast">✓ تم النسخ</div>
+<script>
+const DB=[
+  {code:'I21.9',en:'Acute MI, unspecified',ar:'احتشاء عضلة القلب الحاد',t:['chest pain','cardiac','diaphoresis','arm','st elevation','troponin']},
+  {code:'I21.0',en:'STEMI anterior wall',ar:'احتشاء أمامي',t:['chest pain','st elevation','anterior','cardiac','troponin']},
+  {code:'I21.1',en:'STEMI inferior wall',ar:'احتشاء سفلي',t:['chest pain','st elevation','inferior','cardiac']},
+  {code:'I20.0',en:'Unstable Angina',ar:'ذبحة صدرية غير مستقرة',t:['chest pain','cardiac','angina','exertion']},
+  {code:'I20.9',en:'Angina pectoris',ar:'ذبحة صدرية',t:['chest pain','cardiac','angina','exertion']},
+  {code:'I50.9',en:'Heart Failure, unspecified',ar:'قصور القلب',t:['shortness of breath','dyspnea','heart failure','edema','orthopnea']},
+  {code:'I48.91',en:'Atrial Fibrillation',ar:'الرجفان الأذيني',t:['palpitations','irregular','atrial fibrillation','cardiac']},
+  {code:'I10',en:'Essential Hypertension',ar:'ارتفاع ضغط الدم الأساسي',t:['hypertension','high blood pressure','headache']},
+  {code:'I26.99',en:'Pulmonary Embolism',ar:'الانصمام الرئوي',t:['chest pain','shortness of breath','dyspnea','hypoxia','oxygen','dvt','tachycardia']},
+  {code:'I44.2',en:'Complete AV Block',ar:'كتلة أذينية بطينية كاملة',t:['syncope','bradycardia','cardiac','av block']},
+  {code:'I47.2',en:'Ventricular Tachycardia',ar:'تسرع بطيني',t:['palpitations','syncope','vtach','cardiac']},
+  {code:'I30.9',en:'Acute Pericarditis',ar:'التهاب التامور الحاد',t:['chest pain','fever cough','pericarditis']},
+  {code:'R00.1',en:'Bradycardia',ar:'بطء القلب',t:['bradycardia','syncope','dizziness vertigo']},
+  {code:'J18.9',en:'Pneumonia, unspecified',ar:'التهاب الرئة',t:['fever cough','cough','fever','pneumonia','consolidation']},
+  {code:'J45.901',en:'Asthma, unspecified',ar:'الربو',t:['asthma','wheezing','shortness of breath','dyspnea','cough']},
+  {code:'J44.1',en:'COPD exacerbation',ar:'انتكاسة COPD',t:['copd','shortness of breath','dyspnea','cough','exacerbation']},
+  {code:'J06.9',en:'Upper Respiratory Infection',ar:'التهاب الجهاز التنفسي العلوي',t:['cough','fever cough','sore throat','cold']},
+  {code:'J20.9',en:'Acute Bronchitis',ar:'التهاب القصبات الحاد',t:['cough','fever cough','bronchitis']},
+  {code:'J93.9',en:'Pneumothorax',ar:'استرواح الصدر',t:['chest pain','shortness of breath','dyspnea','hypoxia','oxygen']},
+  {code:'R06.00',en:'Dyspnea, unspecified',ar:'ضيق التنفس',t:['shortness of breath','dyspnea','hypoxia','oxygen']},
+  {code:'K35.80',en:'Acute Appendicitis',ar:'التهاب الزائدة الدودية الحاد',t:['abdominal pain right lower','rlq','fever cough','nausea vomiting','appendicitis']},
+  {code:'K80.20',en:'Acute Cholecystitis',ar:'التهاب المرارة الحاد',t:['abdominal pain right upper','ruq','fever cough','nausea vomiting','jaundice liver','cholecystitis']},
+  {code:'K57.32',en:'Acute Diverticulitis',ar:'التهاب الرتج الحاد',t:['abdominal pain left lower','llq','fever cough','diverticulitis']},
+  {code:'K85.90',en:'Acute Pancreatitis',ar:'التهاب البنكرياس الحاد',t:['abdominal pain right upper','nausea vomiting','back pain lumbar','epigastric','pancreatitis']},
+  {code:'K29.00',en:'Acute Gastritis',ar:'التهاب المعدة الحاد',t:['nausea vomiting','abdominal pain right upper','epigastric','gastritis']},
+  {code:'K25.0',en:'Acute Gastric Ulcer',ar:'قرحة المعدة الحادة',t:['abdominal pain right upper','epigastric','nausea vomiting','rectal bleeding gi bleed']},
+  {code:'K56.60',en:'Bowel Obstruction',ar:'انسداد الأمعاء',t:['abdominal pain right lower','constipation','nausea vomiting','obstruction','distension']},
+  {code:'K92.1',en:'Melena / GI Bleed',ar:'نزيف هضمي',t:['rectal bleeding gi bleed','melena','hematemesis']},
+  {code:'K65.0',en:'Acute Peritonitis',ar:'التهاب البريتوان الحاد',t:['abdominal pain right lower','fever cough','peritonitis','rigid']},
+  {code:'A09',en:'Infectious Gastroenteritis',ar:'التهاب معدي معوي',t:['diarrhea','nausea vomiting','fever cough','gastroenteritis']},
+  {code:'K21.0',en:'GERD with esophagitis',ar:'الجزر المعدي المريئي',t:['heartburn','chest pain','cardiac','epigastric']},
+  {code:'K59.00',en:'Constipation',ar:'الإمساك',t:['constipation','abdominal pain right lower']},
+  {code:'K74.60',en:'Liver Cirrhosis',ar:'تليف الكبد',t:['jaundice liver','ascites','cirrhosis']},
+  {code:'I63.9',en:'Ischemic Stroke',ar:'السكتة الدماغية الإقفارية',t:['stroke weakness hemiplegia','facial droop','speech','stroke']},
+  {code:'I61.9',en:'Hemorrhagic Stroke',ar:'السكتة الدماغية النزفية',t:['stroke weakness hemiplegia','headache','altered consciousness confusion']},
+  {code:'G43.909',en:'Migraine, unspecified',ar:'الشقيقة',t:['headache','nausea vomiting','photophobia','migraine']},
+  {code:'R51.9',en:'Headache, unspecified',ar:'صداع',t:['headache']},
+  {code:'G40.909',en:'Epilepsy / Seizure',ar:'الصرع',t:['seizure convulsion epilepsy','postictal','altered consciousness confusion']},
+  {code:'H81.10',en:'Benign Positional Vertigo (BPPV)',ar:'دوار الوضعة الحميد',t:['dizziness vertigo','positional','bppv']},
+  {code:'R42',en:'Dizziness',ar:'الدوار',t:['dizziness vertigo','lightheadedness']},
+  {code:'R55',en:'Syncope and Collapse',ar:'الإغماء',t:['syncope','collapse','loss of consciousness','palpitations']},
+  {code:'R41.3',en:'Altered Mental Status',ar:'تغير الحالة الذهنية',t:['altered consciousness confusion','delirium','confusion']},
+  {code:'S72.001',en:'Femoral Neck Fracture',ar:'كسر عنق الفخذ',t:['fracture bone','hip','fall','elderly']},
+  {code:'S52.501',en:'Colles Fracture (Distal Radius)',ar:'كسر كولز',t:['fracture bone','wrist','radius','fall']},
+  {code:'S82.002',en:'Tibial Fracture',ar:'كسر الظنبوب',t:['fracture bone','leg','tibia','trauma injury head']},
+  {code:'S09.8',en:'Concussion',ar:'ارتجاج الدماغ',t:['trauma injury head','head','concussion','headache']},
+  {code:'T14.9',en:'Injury, unspecified',ar:'إصابة غير محددة',t:['trauma injury head','wound','injury']},
+  {code:'S01.90',en:'Open wound of head',ar:'جرح الرأس',t:['laceration wound cut','head','scalp']},
+  {code:'S61.001',en:'Open wound of hand',ar:'جرح اليد',t:['laceration wound cut','hand','wound']},
+  {code:'S81.001',en:'Open wound of knee/leg',ar:'جرح الركبة والساق',t:['laceration wound cut','knee','leg']},
+  {code:'S31.000',en:'Open wound of abdomen',ar:'جرح البطن',t:['laceration wound cut','abdomen']},
+  {code:'T31.0',en:'Burns < 10% BSA',ar:'حروق أقل من 10%',t:['burn thermal','fire']},
+  {code:'T31.1',en:'Burns 10-19% BSA',ar:'حروق 10-19%',t:['burn thermal','extensive','fire']},
+  {code:'M54.5',en:'Low Back Pain',ar:'آلام أسفل الظهر',t:['back pain lumbar','musculoskeletal','lumbar']},
+  {code:'M54.2',en:'Cervicalgia',ar:'ألم الرقبة',t:['back pain lumbar','neck','cervical']},
+  {code:'M25.50',en:'Joint Pain, unspecified',ar:'آلام المفاصل',t:['joint pain swelling arthralgia','arthralgia']},
+  {code:'N20.0',en:'Renal Calculus',ar:'حصاة الكلية',t:['renal colic flank kidney stone','hematuria blood urine','flank']},
+  {code:'N23',en:'Unspecified Renal Colic',ar:'مغص كلوي',t:['renal colic flank kidney stone','flank','colicky']},
+  {code:'N39.0',en:'Urinary Tract Infection',ar:'التهاب المسالك البولية',t:['dysuria urinary burning uti','frequency','fever cough','burning']},
+  {code:'N30.00',en:'Acute Cystitis',ar:'التهاب المثانة الحاد',t:['dysuria urinary burning uti','frequency','urgency','cystitis']},
+  {code:'N10',en:'Acute Pyelonephritis',ar:'التهاب الحويضة والكلية الحاد',t:['dysuria urinary burning uti','fever cough','flank','pyelonephritis']},
+  {code:'N17.9',en:'Acute Kidney Injury (AKI)',ar:'الإصابة الكلوية الحادة',t:['renal failure aki oliguria','oliguria','uremia']},
+  {code:'R31.9',en:'Hematuria',ar:'بيلة دموية',t:['hematuria blood urine','blood','urine']},
+  {code:'E11.649',en:'Type 2 DM with Hyperglycemia',ar:'سكري النوع 2 مع ارتفاع السكر',t:['diabetes hyperglycemia glucose','polyuria','polydipsia']},
+  {code:'E13.10',en:'Diabetic Ketoacidosis (DKA)',ar:'الحماض الكيتوني السكري',t:['diabetes hyperglycemia glucose','dka','ketoacidosis','nausea vomiting']},
+  {code:'E16.0',en:'Hypoglycemia',ar:'انخفاض السكر في الدم',t:['hypoglycemia low glucose','diaphoresis','tremor','altered consciousness confusion']},
+  {code:'E87.1',en:'Hyponatremia',ar:'نقص صوديوم الدم',t:['altered consciousness confusion','seizure convulsion epilepsy','nausea vomiting','electrolyte']},
+  {code:'E86.0',en:'Dehydration',ar:'الجفاف',t:['diarrhea','nausea vomiting','hypoglycemia low glucose','weakness','dehydration']},
+  {code:'A41.9',en:'Sepsis, unspecified',ar:'الإنتان',t:['sepsis infection fever','fever cough','tachycardia','hypotension','infection']},
+  {code:'R50.9',en:'Fever, unspecified',ar:'الحمى',t:['sepsis infection fever','fever cough','infection']},
+  {code:'L03.90',en:'Cellulitis, unspecified',ar:'التهاب النسيج الخلوي',t:['laceration wound cut','redness','swelling','infection','cellulitis','sepsis infection fever']},
+  {code:'T78.1',en:'Anaphylaxis',ar:'الصدمة التأقية',t:['allergic reaction anaphylaxis urticaria','anaphylaxis','hypotension','angioedema','shortness of breath']},
+  {code:'L50.0',en:'Allergic Urticaria',ar:'الشرى التحسسي',t:['allergic reaction anaphylaxis urticaria','urticaria','rash','itching']},
+  {code:'D64.9',en:'Anemia, unspecified',ar:'فقر الدم',t:['anemia pallor fatigue','fatigue','pallor','weakness']},
+  {code:'F41.0',en:'Panic Disorder',ar:'اضطراب الهلع',t:['anxiety panic attack','panic attack','chest pain','cardiac','palpitations']},
+  {code:'F41.9',en:'Anxiety Disorder, unspecified',ar:'اضطراب القلق',t:['anxiety panic attack','palpitations','shortness of breath','dyspnea']},
+  {code:'T39.1',en:'Paracetamol Overdose',ar:'جرعة زائدة من الباراسيتامول',t:['drug overdose poisoning toxic','paracetamol','acetaminophen']},
+  {code:'T40.1',en:'Opioid Overdose',ar:'جرعة زائدة من المواد الأفيونية',t:['drug overdose poisoning toxic','opioid','overdose','altered consciousness confusion']},
+  {code:'T65.91',en:'Toxic effect, unspecified',ar:'التأثير السام',t:['drug overdose poisoning toxic','toxic','poisoning']},
+  {code:'O00.9',en:'Ectopic Pregnancy',ar:'الحمل خارج الرحم',t:['abdominal pain left lower','llq','vaginal bleeding','ectopic','pregnancy']},
+  {code:'O20.0',en:'Threatened Abortion',ar:'تهديد الإجهاض',t:['abdominal pain left lower','vaginal bleeding','pregnancy','cramping']},
+];
+
+let selected=new Set(), searchQ='';
+// session log — all exported rows this session
+let sessionLog=[];
+
+function tog(el){
+  el.classList.toggle('on');
+  const s=el.dataset.s;
+  selected.has(s)?selected.delete(s):selected.add(s);
+  document.getElementById('clearSelBtn').classList.toggle('show',selected.size>0);
+  render();
+}
+function clearAll(){
+  selected.clear();
+  document.querySelectorAll('.chip.on').forEach(c=>c.classList.remove('on'));
+  document.getElementById('clearSelBtn').classList.remove('show');
+  render();
+}
+function onSearch(){
+  const inp=document.getElementById('searchInp');
+  searchQ=inp.value.trim();
+  document.getElementById('searchClear').classList.toggle('show',searchQ.length>0);
+  render();
+}
+function clearSearch(){
+  document.getElementById('searchInp').value='';
+  searchQ='';
+  document.getElementById('searchClear').classList.remove('show');
+  render();
+}
+function score(item){
+  let s=0;
+  const q=searchQ.toLowerCase();
+  if(q){
+    if(item.code.toLowerCase().includes(q)) s+=100;
+    if(item.en.toLowerCase().includes(q)) s+=80;
+    if(item.ar.includes(q)) s+=80;
+    if(item.t.some(t=>t.includes(q))) s+=60;
+    if(s===0) return 0;
+  }
+  if(selected.size>0){
+    const selArr=[...selected];
+    selArr.forEach(phrase=>{
+      const words=phrase.toLowerCase().split(/\s+/);
+      let hits=words.filter(w=>item.t.some(t=>t.includes(w))).length;
+      s+=hits*15;
+      if(item.t.some(t=>t.includes(phrase.toLowerCase()))) s+=30;
+    });
+    if(!q&&s===0) return 0;
+  }
+  return s;
+}
+function render(){
+  const res=document.getElementById('results');
+  if(selected.size===0&&!searchQ){
+    res.innerHTML='<div class="empty"><div class="empty-icon">🔍</div><div>اختر أعراضاً أو ابحث بالاسم أو الكود</div></div>';
+    return;
+  }
+  const scored=DB.map(item=>({...item,_s:score(item)})).filter(x=>x._s>0).sort((a,b)=>b._s-a._s).slice(0,15);
+  if(!scored.length){
+    res.innerHTML='<div class="empty"><div class="empty-icon">🤷</div><div>لا نتائج — جرّب بحث آخر</div></div>';
+    return;
+  }
+  const mx=scored[0]._s;
+  res.innerHTML=`<div class="result-count">${scored.length} نتيجة</div>`+scored.map((item,i)=>{
+    const pct=Math.round(item._s/mx*100);
+    const cls=pct>=70?'top':pct>=35?'med':'';
+    const matched=[...selected].filter(s=>item.t.some(t=>t.includes(s.toLowerCase())));
+    const hint=matched.length?`تطابق: <strong>${matched.slice(0,2).join(' + ')}</strong>`:'';
+    return `<div class="icd-card ${cls}"><div class="icd-card-inner">
+      <div class="icd-code">${item.code}</div>
+      <div class="icd-info">
+        <div class="icd-en">${item.en}</div>
+        <div class="icd-ar">${item.ar}</div>
+        ${hint?`<div class="icd-match">${hint}</div>`:''}
+      </div>
+      <button class="copy-btn" id="cb${i}" onclick="copyCode(${i},'${item.code}','${item.en.replace(/'/g,"\\'")}')">
+        ${item.code}
+      </button>
+    </div></div>`;
+  }).join('');
+  window._sc=scored;
+}
+function copyCode(i,code,name){
+  const txt=code+' — '+name;
+  const done=()=>{
+    const b=document.getElementById('cb'+i);
+    b.textContent='✓'; b.classList.add('done');
+    showToast('✓ '+code);
+    setTimeout(()=>{b.textContent=code;b.classList.remove('done');},2000);
+  };
+  if(navigator.clipboard){navigator.clipboard.writeText(txt).then(done).catch(()=>{fb(txt);done();});}
+  else{fb(txt);done();}
+}
+function fb(txt){const t=document.createElement('textarea');t.value=txt;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);}
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800);}
+
+function exportRow(){
+  const scored=window._sc||[];
+  if(!scored.length){showToast('⚠️ اختر أعراضاً أولاً');return;}
+  const fileNum=document.getElementById('fileNum').value.trim()||'—';
+  const now=new Date();
+  const dateStr=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+  const timeStr=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+  const symptomsUsed=[...selected].join(' | ');
+  const top=scored.slice(0,3);
+  const row={
+    fileNum,date:dateStr,time:timeStr,symptoms:symptomsUsed,
+    icd1:top[0]?top[0].code:'',icd1en:top[0]?top[0].en:'',icd1ar:top[0]?top[0].ar:'',
+    icd2:top[1]?top[1].code:'',icd2en:top[1]?top[1].en:'',
+    icd3:top[2]?top[2].code:'',icd3en:top[2]?top[2].en:'',
+  };
+  sessionLog.push(row);
+  const BOM='\uFEFF';
+  const header=['رقم الملف','التاريخ','الوقت','الأعراض',
+    'ICD-1 كود','ICD-1 اسم','ICD-1 عربي',
+    'ICD-2 كود','ICD-2 اسم',
+    'ICD-3 كود','ICD-3 اسم'];
+  const rows=[header,...sessionLog.map(r=>[
+    r.fileNum,r.date,r.time,r.symptoms,
+    r.icd1,r.icd1en,r.icd1ar,r.icd2,r.icd2en,r.icd3,r.icd3en
+  ])];
+  const csv=rows.map(r=>r.map(c=>{
+    const s=String(c||'');
+    return s.includes(',')||s.includes('"')?'"'+s.replace(/"/g,'""')+'"':s;
+  }).join(',')).join('\r\n');
+  const blob=new Blob([BOM+csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download='ICD_Fast_'+dateStr+'.csv'; a.click();
+  URL.revokeObjectURL(url);
+  const btn=document.getElementById('exportBtn');
+  btn.textContent='✅ تم ('+sessionLog.length+')';
+  setTimeout(()=>{btn.textContent='📊 تصدير';},2500);
+  showToast('✅ تم حفظ '+fileNum);
+}
+
+render();
+</script>
+</body>
+</html>
