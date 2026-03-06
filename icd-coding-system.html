@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نظام الترميز الطبي الذكي | MedCode AI</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a; --surface: #111827; --surface2: #1a2235;
+    --border: #1e2d45; --accent: #00d4ff; --accent2: #00ff9d;
+    --danger: #ff4757; --warning: #ffa502;
+    --text: #e8f0fe; --text2: #8899bb; --text3: #4a5f80;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'IBM Plex Sans Arabic',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; overflow-x:hidden; }
+  body::before { content:''; position:fixed; inset:0; background-image:linear-gradient(rgba(0,212,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.03) 1px,transparent 1px); background-size:40px 40px; pointer-events:none; z-index:0; }
+  .container { max-width:1100px; margin:0 auto; padding:0 24px; position:relative; z-index:1; }
+
+  header { padding:24px 0; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+  .logo { display:flex; align-items:center; gap:12px; }
+  .logo-icon { width:40px; height:40px; background:linear-gradient(135deg,var(--accent),var(--accent2)); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:700; color:#000; font-family:'IBM Plex Mono',monospace; }
+  .logo-text { font-size:20px; font-weight:700; background:linear-gradient(90deg,var(--accent),var(--accent2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .logo-sub { font-size:11px; color:var(--text3); letter-spacing:2px; text-transform:uppercase; }
+  .status-badge { display:flex; align-items:center; gap:8px; background:rgba(0,255,157,0.08); border:1px solid rgba(0,255,157,0.2); border-radius:20px; padding:6px 14px; font-size:12px; color:var(--accent2); }
+  .status-dot { width:7px; height:7px; background:var(--accent2); border-radius:50%; animation:pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
+
+  main { padding:40px 0; display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+  @media(max-width:768px){ main{ grid-template-columns:1fr; } }
+
+  .panel { background:var(--surface); border:1px solid var(--border); border-radius:16px; overflow:hidden; }
+  .panel-header { padding:16px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; background:rgba(255,255,255,0.02); }
+  .panel-icon { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px; }
+  .panel-icon.blue { background:rgba(0,212,255,0.1); }
+  .panel-icon.green { background:rgba(0,255,157,0.1); }
+  .panel-title { font-size:14px; font-weight:600; color:var(--text); }
+  .panel-body { padding:20px; }
+
+  .input-group { margin-bottom:16px; }
+  label { display:block; font-size:12px; color:var(--text2); margin-bottom:8px; letter-spacing:0.5px; }
+  textarea { width:100%; background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:14px; color:var(--text); font-family:'IBM Plex Sans Arabic',sans-serif; font-size:14px; line-height:1.7; resize:vertical; min-height:130px; transition:border-color 0.2s; direction:rtl; }
+  textarea:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(0,212,255,0.08); }
+  textarea::placeholder { color:var(--text3); }
+  select { width:100%; background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:12px 14px; color:var(--text); font-family:'IBM Plex Sans Arabic',sans-serif; font-size:14px; cursor:pointer; appearance:none; direction:rtl; }
+  select:focus { outline:none; border-color:var(--accent); }
+
+  /* Voice */
+  .voice-btn { width:100%; padding:20px; background:var(--surface2); border:2px dashed var(--border); border-radius:14px; color:var(--text2); font-family:'IBM Plex Sans Arabic',sans-serif; font-size:15px; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; justify-content:center; gap:12px; margin-bottom:10px; }
+  .voice-btn:hover { border-color:var(--accent); color:var(--accent); background:rgba(0,212,255,0.05); }
+  .voice-btn.recording { border-color:var(--danger); border-style:solid; color:var(--danger); background:rgba(255,71,87,0.07); animation:recordPulse 1.5s infinite; }
+  @keyframes recordPulse { 0%,100%{box-shadow:0 0 0 0 rgba(255,71,87,0.3)} 50%{box-shadow:0 0 0 10px rgba(255,71,87,0)} }
+  .mic-dot { width:12px; height:12px; background:currentColor; border-radius:50%; }
+  .voice-btn.recording .mic-dot { animation:micPulse 0.6s infinite alternate; }
+  @keyframes micPulse { from{transform:scale(1)} to{transform:scale(1.4)} }
+
+  .live-transcript { background:rgba(0,212,255,0.04); border:1px solid rgba(0,212,255,0.15); border-radius:10px; padding:12px 14px; font-size:13px; color:var(--accent); line-height:1.7; margin-bottom:10px; display:none; min-height:44px; }
+  .live-transcript.show { display:block; }
+  .live-transcript .interim { color:var(--text3); font-style:italic; }
+
+  .input-divider { display:flex; align-items:center; gap:10px; margin:12px 0; color:var(--text3); font-size:12px; }
+  .input-divider::before, .input-divider::after { content:''; flex:1; height:1px; background:var(--border); }
+
+  .examples { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+  .example-chip { background:var(--surface2); border:1px solid var(--border); border-radius:20px; padding:5px 12px; font-size:12px; color:var(--text2); cursor:pointer; transition:all 0.2s; }
+  .example-chip:hover { border-color:var(--accent); color:var(--accent); }
+
+  .btn-analyze { width:100%; padding:14px; background:linear-gradient(135deg,var(--accent),#0099cc); border:none; border-radius:10px; color:#000; font-family:'IBM Plex Sans Arabic',sans-serif; font-size:15px; font-weight:700; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; justify-content:center; gap:8px; margin-top:16px; }
+  .btn-analyze:hover { transform:translateY(-1px); box-shadow:0 8px 25px rgba(0,212,255,0.3); }
+  .btn-analyze:active { transform:translateY(0); }
+  .btn-analyze:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+
+  .result-placeholder { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:300px; color:var(--text3); text-align:center; gap:12px; }
+  .result-placeholder .icon { font-size:48px; opacity:0.3; }
+
+  .loading { display:none; flex-direction:column; align-items:center; justify-content:center; min-height:300px; gap:16px; }
+  .loading.show { display:flex; }
+  .spinner { width:48px; height:48px; border:3px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:spin 0.8s linear infinite; }
+  @keyframes spin { to{transform:rotate(360deg)} }
+  .loading-steps { display:flex; flex-direction:column; gap:6px; width:100%; max-width:220px; }
+  .loading-step { font-size:12px; color:var(--text3); display:flex; align-items:center; gap:8px; transition:color 0.3s; }
+  .loading-step.active { color:var(--accent); }
+  .loading-step.done { color:var(--accent2); }
+
+  .results-content { display:none; }
+  .results-content.show { display:block; }
+
+  .stats-row { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:20px; }
+  .stat-card { background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:12px; text-align:center; }
+  .stat-value { font-size:22px; font-weight:700; font-family:'IBM Plex Mono',monospace; background:linear-gradient(90deg,var(--accent),var(--accent2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .stat-label { font-size:11px; color:var(--text3); margin-top:2px; }
+
+  .summary-section { background:rgba(0,255,157,0.05); border:1px solid rgba(0,255,157,0.15); border-radius:12px; padding:16px; margin-bottom:16px; }
+  .summary-title { font-size:12px; color:var(--accent2); font-weight:600; letter-spacing:1px; text-transform:uppercase; margin-bottom:8px; }
+  .summary-text { font-size:13px; color:var(--text2); line-height:1.7; }
+
+  .icd-card { background:var(--surface2); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:12px; transition:all 0.2s; cursor:pointer; position:relative; overflow:hidden; }
+  .icd-card::before { content:''; position:absolute; right:0; top:0; bottom:0; width:3px; background:linear-gradient(180deg,var(--accent),var(--accent2)); opacity:0; transition:opacity 0.2s; }
+  .icd-card:hover { border-color:var(--accent); }
+  .icd-card:hover::before { opacity:1; }
+  .icd-card.primary { border-color:rgba(0,212,255,0.3); background:rgba(0,212,255,0.05); }
+  .icd-card.primary::before { opacity:1; }
+  .icd-top { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:8px; gap:12px; }
+  .icd-code { font-family:'IBM Plex Mono',monospace; font-size:20px; font-weight:500; color:var(--accent); letter-spacing:1px; }
+  .icd-badge { font-size:10px; padding:3px 8px; border-radius:20px; font-weight:600; letter-spacing:0.5px; white-space:nowrap; }
+  .badge-primary { background:rgba(0,212,255,0.15); color:var(--accent); border:1px solid rgba(0,212,255,0.3); }
+  .badge-secondary { background:rgba(136,153,187,0.1); color:var(--text2); border:1px solid rgba(136,153,187,0.2); }
+  .icd-name { font-size:14px; font-weight:600; color:var(--text); margin-bottom:4px; }
+  .icd-name-ar { font-size:13px; color:var(--text2); margin-bottom:8px; }
+  .confidence-row { display:flex; align-items:center; justify-content:space-between; font-size:12px; color:var(--text3); margin-bottom:4px; }
+  .confidence-pct { color:var(--accent2); font-weight:600; }
+  .confidence-bar { background:var(--surface2); border-radius:4px; height:6px; overflow:hidden; margin-top:6px; border:1px solid var(--border); }
+  .confidence-fill { height:100%; border-radius:4px; background:linear-gradient(90deg,var(--accent2),var(--accent)); transition:width 1s ease; }
+
+  .warning-box { background:rgba(255,165,2,0.07); border:1px solid rgba(255,165,2,0.2); border-radius:10px; padding:12px; margin-top:16px; font-size:12px; color:var(--warning); display:flex; gap:8px; align-items:flex-start; line-height:1.6; }
+  .section-label { font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--text3); margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid var(--border); }
+  .error-box { background:rgba(255,71,87,0.07); border:1px solid rgba(255,71,87,0.2); border-radius:10px; padding:16px; color:var(--danger); font-size:13px; text-align:center; }
+  .copy-btn { background:transparent; border:1px solid var(--border); border-radius:6px; color:var(--text2); font-size:12px; padding:4px 10px; cursor:pointer; font-family:'IBM Plex Sans Arabic',sans-serif; transition:all 0.2s; margin-top:8px; }
+  .copy-btn:hover { border-color:var(--accent2); color:var(--accent2); }
+  ::-webkit-scrollbar { width:6px; } ::-webkit-scrollbar-track { background:var(--surface); } ::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+  .no-support-msg { font-size:11px; color:var(--warning); text-align:center; margin-top:6px; display:none; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="logo">
+      <div class="logo-icon">MC</div>
+      <div>
+        <div class="logo-text">MedCode AI</div>
+        <div class="logo-sub">نظام الترميز الطبي الذكي</div>
+      </div>
+    </div>
+    <div class="status-badge"><div class="status-dot"></div>النظام نشط</div>
+  </header>
+
+  <main>
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-icon blue">🎙️</div>
+        <div><div class="panel-title">إدخال الملاحظات السريرية</div></div>
+      </div>
+      <div class="panel-body">
+        <div class="input-group">
+          <label>التخصص الطبي</label>
+          <select id="specialty">
+            <option value="general">طب عام / طوارئ</option>
+            <option value="cardiology">قلب وأوعية</option>
+            <option value="orthopedics">عظام</option>
+            <option value="neurology">أعصاب</option>
+            <option value="endocrine">غدد صماء / سكري</option>
+            <option value="respiratory">جهاز تنفسي</option>
+            <option value="gastro">جهاز هضمي</option>
+          </select>
+        </div>
+
+        <!-- VOICE INPUT -->
+        <div class="input-group">
+          <label>التسجيل الصوتي — تكلم مباشرة</label>
+          <button class="voice-btn" id="voiceBtn" onclick="toggleVoice()">
+            <div class="mic-dot" id="micDot"></div>
+            <span id="voiceBtnText">🎙️ اضغط وتكلم بالعربي أو الإنجليزي</span>
+          </button>
+          <div class="live-transcript" id="liveTranscript">
+            <span id="finalText"></span><span class="interim" id="interimText"></span>
+          </div>
+          <div class="no-support-msg" id="noSupportMsg">⚠️ المتصفح لا يدعم التسجيل الصوتي — استخدم Chrome أو Edge</div>
+        </div>
+
+        <div class="input-divider">أو اكتب يدوياً</div>
+
+        <div class="input-group">
+          <label>الملاحظات السريرية النصية</label>
+          <textarea id="clinicalNotes" placeholder="اكتب أو سيظهر هنا ما قلته صوتياً..."></textarea>
+          <div class="examples">
+            <span class="example-chip" onclick="fillExample('mi')">احتشاء عضلة القلب</span>
+            <span class="example-chip" onclick="fillExample('dm')">سكري مع مضاعفات</span>
+            <span class="example-chip" onclick="fillExample('fracture')">كسر عظم</span>
+            <span class="example-chip" onclick="fillExample('pneumonia')">التهاب رئة</span>
+          </div>
+        </div>
+
+        <button class="btn-analyze" id="analyzeBtn" onclick="analyzeNotes()">
+          <span>🔍</span><span>تحليل واستخراج رموز ICD-10</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-icon green">⚡</div>
+        <div><div class="panel-title">رموز ICD-10 المقترحة</div></div>
+      </div>
+      <div class="panel-body">
+        <div class="result-placeholder" id="placeholder">
+          <div class="icon">🏥</div>
+          <div style="font-size:14px;color:var(--text2)">سجّل صوتياً أو اكتب الملاحظات</div>
+          <div style="font-size:12px">سيتم استخراج رموز ICD-10 تلقائياً</div>
+        </div>
+        <div class="loading" id="loading">
+          <div class="spinner"></div>
+          <div class="loading-steps">
+            <div class="loading-step active" id="step1">⟳ تحليل النص السريري</div>
+            <div class="loading-step" id="step2">⟳ استخراج التشخيصات</div>
+            <div class="loading-step" id="step3">⟳ مطابقة قاعدة ICD-10</div>
+            <div class="loading-step" id="step4">⟳ حساب درجة الثقة</div>
+          </div>
+        </div>
+        <div class="results-content" id="results"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+// ─── Examples ───────────────────────────────────────────
+const examples = {
+  mi:`مريض ذكر ٥٥ سنة، مدخن منذ ٢٠ سنة، يشكو من ألم صدري ضاغط شديد مع انتشار للذراع اليسرى والفك السفلي، مصحوب بضيق نفس وتعرق وغثيان. بدأ قبل ٣ ساعات. ECG يظهر ST elevation في V1-V4. تاريخ مرضي: ارتفاع ضغط الدم منذ ١٠ سنوات، سكري نوع ٢. الضغط ١٦٠/٩٥، نبض ١١٠.`,
+  dm:`مريضة أنثى ٦٢ سنة، سكري نوع ٢ منذ ١٥ سنة، قدمت بجرح في القدم اليمنى لا يلتئم مع احمرار وتورم. سكر الدم العشوائي ٣٨٠. HbA1c 11.2. مصحوب بارتفاع ضغط واعتلال كلوي مزمن.`,
+  fracture:`مريض ذكر ٣٠ سنة، حادث سير، ألم شديد في الكتف الأيمن مع عدم القدرة على الحركة. الأشعة: كسر في عنق عظمة العضد مع إزاحة.`,
+  pneumonia:`مريض ذكر ٤٥ سنة، حمى ٣٩.٥ وسعال بلغم صفراوي وضيق نفس منذ ٥ أيام. الأشعة: تكاثف الفص السفلي الأيمن. WBC 18000.`
+};
+function fillExample(t){ document.getElementById('clinicalNotes').value = examples[t]; }
+
+// ─── Voice Recognition ───────────────────────────────────
+let recognition = null;
+let isRecording = false;
+let finalTranscript = '';
+
+function initRecognition(){
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR){
+    document.getElementById('noSupportMsg').style.display = 'block';
+    document.getElementById('voiceBtn').disabled = true;
+    document.getElementById('voiceBtn').style.opacity = '0.4';
+    return null;
+  }
+  const r = new SR();
+  r.continuous = true;
+  r.interimResults = true;
+  r.lang = 'ar-SA';
+
+  r.onstart = () => {
+    isRecording = true;
+    document.getElementById('voiceBtn').classList.add('recording');
+    document.getElementById('voiceBtnText').textContent = '⏹ إيقاف التسجيل';
+    document.getElementById('liveTranscript').classList.add('show');
+  };
+
+  r.onresult = (e) => {
+    let interim = '';
+    for(let i = e.resultIndex; i < e.results.length; i++){
+      if(e.results[i].isFinal){
+        finalTranscript += e.results[i][0].transcript + ' ';
+      } else {
+        interim += e.results[i][0].transcript;
+      }
+    }
+    document.getElementById('finalText').textContent = finalTranscript;
+    document.getElementById('interimText').textContent = interim;
+    // Mirror to textarea
+    document.getElementById('clinicalNotes').value = finalTranscript + interim;
+  };
+
+  r.onend = () => {
+    isRecording = false;
+    document.getElementById('voiceBtn').classList.remove('recording');
+    document.getElementById('voiceBtnText').textContent = '🎙️ اضغط وتكلم بالعربي أو الإنجليزي';
+    document.getElementById('interimText').textContent = '';
+    if(finalTranscript.trim()){
+      document.getElementById('clinicalNotes').value = finalTranscript.trim();
+    }
+  };
+
+  r.onerror = (e) => {
+    console.error('Speech error:', e.error);
+    isRecording = false;
+    document.getElementById('voiceBtn').classList.remove('recording');
+    document.getElementById('voiceBtnText').textContent = '🎙️ اضغط وتكلم بالعربي أو الإنجليزي';
+    if(e.error === 'not-allowed'){
+      showVoiceError('⚠️ لتفعيل الصوت: احفظ الملف وافتحه مباشرة في Chrome (خارج Claude) — أو اسمح للمتصفح بالوصول للمايكروفون');
+    } else if(e.error === 'no-speech'){
+      showVoiceError('لم يتم اكتشاف صوت، حاول مجدداً');
+    } else {
+      showVoiceError('خطأ في التسجيل: ' + e.error);
+    }
+  };
+
+  return r;
+}
+
+function toggleVoice(){
+  if(!recognition) recognition = initRecognition();
+  if(!recognition) return;
+  if(isRecording){
+    recognition.stop();
+  } else {
+    finalTranscript = '';
+    document.getElementById('finalText').textContent = '';
+    document.getElementById('interimText').textContent = '';
+    recognition.start();
+  }
+}
+
+// ─── Analysis ────────────────────────────────────────────
+async function analyzeNotes(){
+  const notes = document.getElementById('clinicalNotes').value.trim();
+  if(!notes){ alert('الرجاء إدخال أو تسجيل الملاحظات السريرية أولاً'); return; }
+  const specialty = document.getElementById('specialty').value;
+  const btn = document.getElementById('analyzeBtn');
+
+  btn.disabled = true;
+  document.getElementById('placeholder').style.display = 'none';
+  document.getElementById('results').classList.remove('show');
+  document.getElementById('loading').classList.add('show');
+
+  const steps = ['step1','step2','step3','step4'];
+  let si = 0;
+  const iv = setInterval(()=>{
+    if(si>0){ const p=document.getElementById(steps[si-1]); p.classList.remove('active'); p.classList.add('done'); p.textContent='✓ '+p.textContent.replace('⟳ ',''); }
+    if(si<steps.length){ document.getElementById(steps[si]).classList.add('active'); si++; } else clearInterval(iv);
+  }, 600);
+
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({
+        model:"claude-sonnet-4-5",
+        max_tokens:1000,
+        system:`You are an ICD-10 medical coding specialist. Analyze clinical notes and return ONLY valid JSON, no markdown, no backticks.
+Format: {"summary":"ملخص الحالة بالعربية","codes":[{"code":"X00.0","nameEn":"Name","nameAr":"الاسم","type":"primary","confidence":90,"reason":"السبب"}],"warnings":[],"insurance_tip":"نصيحة التأمين"}
+Rules: type = primary or secondary. confidence = 60-98. Primary code first. All Arabic text in Arabic.`,
+        messages:[{role:"user",content:`Specialty: ${specialty}\n\nClinical notes:\n${notes}`}]
+      })
+    });
+
+    clearInterval(iv);
+    steps.forEach(s=>{ const el=document.getElementById(s); el.classList.remove('active'); el.classList.add('done'); });
+
+    const data = await res.json();
+    const text = (data.content||[]).map(i=>i.text||'').join('');
+
+    let parsed;
+    try {
+      let clean = text.trim().replace(/```json\s*/g,'').replace(/```\s*/g,'').trim();
+      const m = clean.match(/\{[\s\S]*\}/);
+      if(m) clean = m[0];
+      parsed = JSON.parse(clean);
+      if(!parsed.codes||!Array.isArray(parsed.codes)) throw new Error('invalid structure');
+    } catch(e){
+      console.error('Parse error:',e,'Raw:',text);
+      throw new Error('خطأ في تحليل الاستجابة');
+    }
+
+    renderResults(parsed);
+  } catch(err){
+    document.getElementById('loading').classList.remove('show');
+    document.getElementById('results').innerHTML=`<div class="error-box">⚠️ ${err.message}</div>`;
+    document.getElementById('results').classList.add('show');
+  } finally { btn.disabled=false; }
+}
+
+function renderResults(data){
+  document.getElementById('loading').classList.remove('show');
+  const primary = data.codes.filter(c=>c.type==='primary');
+  const secondary = data.codes.filter(c=>c.type==='secondary');
+  const avg = Math.round(data.codes.reduce((a,c)=>a+c.confidence,0)/data.codes.length);
+
+  let html=`
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-value">${data.codes.length}</div><div class="stat-label">رموز مستخرجة</div></div>
+      <div class="stat-card"><div class="stat-value">${avg}%</div><div class="stat-label">متوسط الثقة</div></div>
+      <div class="stat-card"><div class="stat-value">${primary.length}</div><div class="stat-label">تشخيص رئيسي</div></div>
+    </div>
+    <div class="summary-section">
+      <div class="summary-title">ملخص الحالة</div>
+      <div class="summary-text">${data.summary}</div>
+    </div>`;
+
+  if(primary.length){ html+=`<div class="section-label">التشخيص الرئيسي</div>`; primary.forEach(c=>{html+=codeCard(c,true);}); }
+  if(secondary.length){ html+=`<div class="section-label" style="margin-top:16px">التشخيصات الثانوية</div>`; secondary.forEach(c=>{html+=codeCard(c,false);}); }
+
+  if(data.insurance_tip) html+=`<div class="summary-section" style="margin-top:16px;background:rgba(0,212,255,0.05);border-color:rgba(0,212,255,0.15)"><div class="summary-title" style="color:var(--accent)">💡 نصيحة التأمين</div><div class="summary-text">${data.insurance_tip}</div></div>`;
+  if(data.warnings) data.warnings.forEach(w=>{html+=`<div class="warning-box">⚠️ <span>${w}</span></div>`;});
+
+  const all = data.codes.map(c=>c.code).join(', ');
+  html+=`<button class="copy-btn" onclick="navigator.clipboard.writeText('${all}').then(()=>alert('تم النسخ'))">📋 نسخ الرموز: ${all}</button>`;
+
+  document.getElementById('results').innerHTML=html;
+  document.getElementById('results').classList.add('show');
+  setTimeout(()=>{ document.querySelectorAll('.confidence-fill').forEach(el=>{el.style.width=el.dataset.width+'%';}); },100);
+}
+
+function showVoiceError(msg){
+  const el = document.getElementById('noSupportMsg');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+function checkIframeRestriction(){
+  try {
+    // If inside iframe (Claude artifact), mic won't work
+    if(window.self !== window.top){
+      const btn = document.getElementById('voiceBtn');
+      btn.title = 'افتح الملف في Chrome لتفعيل الصوت';
+      showVoiceError('🔒 داخل Claude: الصوت لا يعمل في المعاينة. حمّل الملف وافتحه في Chrome لتفعيل التسجيل الصوتي.');
+    }
+  } catch(e) {
+    // cross-origin iframe - definitely restricted
+    showVoiceError('🔒 افتح الملف مباشرة في Chrome لتفعيل التسجيل الصوتي');
+  }
+}
+
+window.addEventListener('load', checkIframeRestriction);
+  return `<div class="icd-card ${isPrimary?'primary':''}">
+    <div class="icd-top">
+      <div class="icd-code">${c.code}</div>
+      <span class="icd-badge ${isPrimary?'badge-primary':'badge-secondary'}">${isPrimary?'رئيسي':'ثانوي'}</span>
+    </div>
+    <div class="icd-name">${c.nameEn}</div>
+    <div class="icd-name-ar">${c.nameAr}</div>
+    <div class="confidence-row"><span>درجة الثقة</span><span class="confidence-pct">${c.confidence}%</span></div>
+    <div class="confidence-bar"><div class="confidence-fill" data-width="${c.confidence}" style="width:0%"></div></div>
+    ${c.reason?`<div style="font-size:12px;color:var(--text3);margin-top:8px;line-height:1.6">${c.reason}</div>`:''}
+  </div>`;
+}
+</script>
+</body>
+</html>
